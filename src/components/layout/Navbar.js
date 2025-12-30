@@ -59,17 +59,18 @@ const Navbar = () => {
                 <Link to="/cart" className="action-icon">
                   <ShoppingBag size={24} />
                 </Link>
-                <div className="user-menu">
+                <Link to="/profile" className="user-profile-link">
+                  <User size={24} className="profile-icon" />
                   <span className="user-name">
                     {user?.full_name || user?.email || "User"}
                   </span>
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-logout-text"
-                  >
-                    {t("common.logout") || "Logout"}
-                  </button>
-                </div>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-logout-text"
+                >
+                  {t("common.logout") || "Logout"}
+                </button>
               </>
             ) : (
               <div className="auth-buttons">
@@ -127,6 +128,11 @@ const Navbar = () => {
             >
               {t("common.baby")}
             </Link>
+            {isAuthenticated && (
+              <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                {t("profile.title") || "My Profile"}
+              </Link>
+            )}
           </nav>
         </div>
       )}
@@ -262,16 +268,30 @@ const Navbar = () => {
             gap: 12px;
         }
         
-        .user-menu {
+        .user-profile-link {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--darker);
+            transition: var(--transition);
+            padding: 4px 8px;
+            border-radius: 6px;
         }
         
+        .user-profile-link:hover {
+            background-color: var(--gray-50);
+            color: var(--gold);
+        }
+
+        .profile-icon {
+            color: var(--darker);
+        }
+
         .user-name {
             font-size: 14px;
-            font-weight: 500;
-            color: var(--darker);
+            font-weight: 600;
+            color: inherit;
             display: none;
             max-width: 120px;
             overflow: hidden;

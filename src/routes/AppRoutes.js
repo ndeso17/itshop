@@ -11,6 +11,7 @@ import ProductList from "../pages/ProductList";
 import ProductDetail from "../pages/ProductDetail";
 import Cart from "../pages/Cart";
 import Wishlist from "../pages/Wishlist";
+import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
@@ -60,6 +61,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Wishlist />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
