@@ -7,6 +7,7 @@ import Layout from "../components/layout/Layout";
 import GuestHome from "../pages/GuestHome";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import ForgotPassword from "../pages/ForgotPassword";
 import ProductList from "../pages/ProductList";
 import ProductDetail from "../pages/ProductDetail";
 import Cart from "../pages/Cart";
@@ -20,6 +21,7 @@ const AppRoutes = () => {
       {/* Auth Pages (Standalone) */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Main Layout Routes */}
       <Route

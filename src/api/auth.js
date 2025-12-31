@@ -127,10 +127,64 @@ export const logout = async () => {
 };
 
 /**
- * Refresh access token
- * Requires Bearer token in headers (handled by axios interceptor)
- * @returns {Promise<{success: boolean, data: {token, user, expires_in}, message: string}>}
+ * Request Password Reset
+ * @param {string} email - User email
+ * @returns {Promise<{success: boolean, message: string}>}
  */
+export const forgotPassword = async (email) => {
+  try {
+    const response = await api.post("/api/auth/forgot-password", { email });
+
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    };
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Failed to send reset code. Please try again.",
+      error: error.response?.data,
+    };
+  }
+};
+
+/**
+ * Reset Password with OTP
+ * @param {string} email - User email
+ * @param {string} otp - OTP code from email
+ * @param {string} password - New password
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export const resetPassword = async (email, otp, password) => {
+  try {
+    const response = await api.put("/api/auth/reset-password", {
+      email,
+      otp,
+      password,
+      password_confirmation: password,
+    });
+
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    };
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Reset password failed. Please try again.",
+      error: error.response?.data,
+    };
+  }
+};
+
 export const refreshToken = async () => {
   try {
     const response = await api.post("/api/auth/refresh");
@@ -158,4 +212,6 @@ export default {
   register,
   logout,
   refreshToken,
+  forgotPassword,
+  resetPassword,
 };

@@ -91,7 +91,22 @@
         "deviceId": "Device ID",
         "yes": "Yes",
         "no": "No",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "forgotPasswordTitle": "Forgot Password",
+        "forgotPasswordSubtitle": "Enter your email to receive a reset code",
+        "resetPasswordTitle": "Reset Password",
+        "resetPasswordSubtitle": "Enter the code sent to your email and your new password",
+        "sendCode": "Send Reset Code",
+        "sending": "Sending...",
+        "resetCodeSent": "Reset code has been sent to your email",
+        "otpCode": "OTP Code",
+        "newPassword": "New Password",
+        "resetPasswordButton": "Reset Password",
+        "resetting": "Resetting...",
+        "passwordResetSuccess": "Password has been reset successfully",
+        "backToEmail": "Back to Email",
+        "backToLogin": "Back to Login",
+        "passwordsDoNotMatch": "Passwords do not match"
     },
     "product": {
         "addToCart": "Add to Cart",

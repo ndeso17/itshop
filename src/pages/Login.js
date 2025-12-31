@@ -101,7 +101,7 @@ const Login = () => {
                   disabled={loading}
                 />
               </div>
-              <Link to="#" className="forgot-password">
+              <Link to="/forgot-password" className="forgot-password">
                 {t("auth.forgotPassword") || "Forgot password?"}
               </Link>
             </div>
