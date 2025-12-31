@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, Heart, Search, Menu, X, User } from "lucide-react"; // Ensure lucide-react is installed
+import { ShoppingBag, Heart, Search, Menu, X, User, Sun, Moon } from "lucide-react"; // Ensure lucide-react is installed
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import { useTheme } from "../../context/ThemeContext";
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -82,8 +84,16 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
-
-            {/* Mobile Toggle */}
+            
+            <button 
+              onClick={toggleTheme} 
+              className="action-icon theme-toggle" 
+              aria-label="Toggle Theme"
+            >
+              {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
+            </button>
+ 
+             {/* Mobile Toggle */}
             <button
               className="mobile-menu-toggle"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -171,15 +181,19 @@ const Navbar = () => {
         
         .desktop-nav {
             display: none;
-            gap: 32px;
+            gap: 40px;
+            margin: 0 20px;
         }
         
         .desktop-nav a {
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             color: var(--text-dark);
             position: relative;
             transition: var(--transition);
+            white-space: nowrap;
         }
         
         .desktop-nav a::after {
@@ -205,7 +219,7 @@ const Navbar = () => {
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
         
         .search-bar-wrapper {
@@ -214,13 +228,14 @@ const Navbar = () => {
         }
         
         .nav-search-input {
-            width: 280px;
-            padding: 10px 40px 10px 16px;
+            width: 300px;
+            height: 38px;
+            padding: 0 40px 0 16px;
             border: 1px solid var(--gray-300);
             border-radius: 4px;
             background: var(--gray-50);
             outline: none;
-            font-size: 14px;
+            font-size: 13px;
             transition: var(--transition);
         }
         
@@ -228,6 +243,7 @@ const Navbar = () => {
             background: var(--white);
             border-color: var(--darker);
             box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            width: 350px;
         }
         
         .nav-search-input::placeholder {
@@ -316,6 +332,24 @@ const Navbar = () => {
             border-color: var(--darker);
         }
         
+        .theme-toggle {
+            cursor: pointer;
+            border: none;
+            background: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            color: var(--darker);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--gray-100);
+            color: var(--gold);
+        }
+        
         .mobile-menu-toggle {
             background: none;
             display: block;
@@ -400,7 +434,11 @@ const Navbar = () => {
             }
             
             .nav-search-input {
-                width: 320px;
+                width: 450px;
+            }
+            
+            .nav-search-input:focus {
+                width: 500px;
             }
         }
       `}</style>

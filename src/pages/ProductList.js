@@ -376,7 +376,7 @@ const ProductList = () => {
         .loading-state, .error-state {
             text-align: center;
             padding: 60px;
-            background: #fafafa;
+            background: var(--gray-50);
             border-radius: 8px;
         }
         .product-list-page {
@@ -386,6 +386,7 @@ const ProductList = () => {
             max-width: 100%; /* Ensure full width */
             padding-left: 20px;
             padding-right: 20px;
+            background: var(--white);
         }
         .page-header {
             display: flex;
@@ -400,7 +401,7 @@ const ProductList = () => {
             margin-bottom: 5px;
         }
         .product-count {
-            color: #888;
+            color: var(--gray-500);
             font-size: 14px;
         }
         
@@ -430,7 +431,7 @@ const ProductList = () => {
         .sort-label {
              font-size: 12px;
              text-transform: uppercase;
-             color: #888;
+             color: var(--gray-500);
              margin-bottom: 8px;
              font-weight: 600;
         }
@@ -442,23 +443,23 @@ const ProductList = () => {
         }
         
         .category-tag {
-            background: #fff;
-            border: 1px solid #eee;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 13px;
-            color: #555;
+            color: var(--text-dark);
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
         }
         .category-tag:hover {
-            border-color: #ccc;
+            border-color: var(--gray-400);
             color: var(--dark);
         }
         .category-tag.active {
             background: var(--darker);
-            color: #fff;
+            color: var(--white);
             border-color: var(--darker);
         }
         
@@ -466,14 +467,14 @@ const ProductList = () => {
         .modern-select {
             width: 100%;
             padding: 10px 14px;
-            border: 1px solid #e1e1e1;
+            border: 1px solid var(--gray-200);
             border-radius: 8px;
-            background-color: #fff;
+            background-color: var(--white);
             font-size: 14px;
             color: var(--darker);
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat;
             background-position: right 12px top 50%;
             background-size: 10px auto;
@@ -512,19 +513,20 @@ const ProductList = () => {
         }
         .page-btn {
             padding: 8px 12px;
-            border: 1px solid #ddd;
-            background: #fff;
+            border: 1px solid var(--gray-300);
+            background: var(--white);
+            color: var(--text-dark);
             cursor: pointer;
             border-radius: 4px;
             transition: var(--transition);
         }
         .page-btn:hover:not(:disabled) {
-            background: #f5f5f5;
-            border-color: #ccc;
+            background: var(--gray-50);
+            border-color: var(--gray-400);
         }
         .page-btn.active {
             background: var(--darker);
-            color: #fff;
+            color: var(--white);
             border-color: var(--darker);
         }
         .page-btn:disabled {
@@ -535,8 +537,9 @@ const ProductList = () => {
         .empty-state {
             text-align: center;
             padding: 60px;
-            background: #fafafa;
+            background: var(--gray-50);
             border-radius: 8px;
+            color: var(--text-dark);
         }
         
         /* Responsive adaptations */

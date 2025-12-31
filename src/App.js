@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { ToastProvider } from "./context/ToastContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { setAuthTokenGetter } from "./api/axios";
 import AppRoutes from "./routes/AppRoutes";
 import "./App.css";
@@ -25,7 +26,9 @@ function App() {
       <AuthProvider>
         <LanguageProvider>
           <ToastProvider>
-            <AppContent />
+            <ThemeProvider>
+              <AppContent />
+            </ThemeProvider>
           </ToastProvider>
         </LanguageProvider>
       </AuthProvider>

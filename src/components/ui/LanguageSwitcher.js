@@ -77,20 +77,20 @@ const LanguageSwitcher = () => {
           gap: 6px;
           padding: 6px 10px;
           border-radius: 20px;
-          background: #f5f5f5;
-          border: 1px solid #e0e0e0;
+          background: var(--gray-100);
+          border: 1px solid var(--gray-300);
           cursor: pointer;
           transition: all 0.2s;
           font-size: 16px;
           line-height: 1;
         }
         .lang-btn:hover {
-          background: #fff;
-          border-color: #d0d0d0;
+          background: var(--white);
+          border-color: var(--gray-400);
           box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .chevron {
-          color: #666;
+          color: var(--gray-600);
           transition: transform 0.2s;
         }
         .chevron.open {
@@ -102,10 +102,10 @@ const LanguageSwitcher = () => {
           top: 100%;
           right: 0;
           margin-top: 8px;
-          background: #fff;
+          background: var(--white);
           border-radius: 8px;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-          border: 1px solid #eee;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+          border: 1px solid var(--gray-200);
           min-width: 140px;
           z-index: 1001; /* Ensure above header items */
           padding: 5px;
@@ -123,16 +123,16 @@ const LanguageSwitcher = () => {
           text-align: left;
           cursor: pointer;
           font-size: 14px;
-          color: #333;
+          color: var(--text-dark);
           border-radius: 4px;
           transition: background 0.2s;
         }
         .lang-option:hover {
-          background: #f5f5f5;
+          background: var(--gray-100);
         }
         .lang-option.active {
-          background: #f0f7ff;
-          color: var(--darker, #000);
+          background: var(--gray-200);
+          color: var(--darker);
           font-weight: 500;
         }
         .option-flag {
