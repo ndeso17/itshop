@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Filter, ChevronDown, ChevronUp } from "lucide-react";
+// import { Filter, ChevronDown, ChevronUp } from "lucide-react";
 import ProductCard from "../components/ui/ProductCard";
 import { getProducts } from "../api/products";
 import { useTranslation } from "react-i18next";
@@ -19,6 +19,7 @@ const ProductList = () => {
 
   // Helper to translate categories
   const getCategoryName = (cat) => {
+    if (!cat || typeof cat !== 'string') return "";
     if (cat === "All") return t("common.allFashion");
 
     // Check common manual maps first
@@ -37,21 +38,32 @@ const ProductList = () => {
   };
 
   const [sortBy, setSortBy] = useState("newest");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+
+  // Sync searchQuery with URL params
+  useEffect(() => {
+    const query = searchParams.get("search");
+    setSearchQuery(query || "");
+  }, [searchParams]);
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 50; // 10 columns * 5 rows
+  const itemsPerPage = 50;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         const data = await getProducts();
-        setProducts(data);
+        // Strictly filter invalid data
+        const validData = Array.isArray(data)
+          ? data.filter(item => item && typeof item === 'object')
+          : [];
+        setProducts(validData);
       } catch (err) {
         console.error(err);
         setError("Failed to load products");
@@ -90,68 +102,94 @@ const ProductList = () => {
       newCategories.forEach((cat) => newParams.append("category", cat));
     }
 
+    // Preserve Search query if exists
+    if (searchQuery) {
+      newParams.set("search", searchQuery);
+    }
+
     setSearchParams(newParams);
     setCurrentPage(1);
   };
 
   // Extract all unique categories from products' `categories` array
   const categories = useMemo(() => {
-    const allCats = products.flatMap((p) => p.categories || []);
-    // Remove "Uncategorized", duplicates, and empty strings
+    if (!Array.isArray(products)) return ["All"];
+
+    const allCats = products.flatMap((p) => {
+      if (!p) return [];
+      let cats = p.categories;
+      // Handle single category case fallback
+      if (!cats && p.category) {
+        cats = [p.category];
+      }
+      if (!Array.isArray(cats)) return [];
+
+      // Extract names
+      return cats.map(c => {
+        if (typeof c === 'string') return c;
+        if (c && typeof c === 'object') {
+          return c.name || c.category_name || "";
+        }
+        return "";
+      });
+    });
+
     const uniqueCats = [...new Set(allCats)]
-      .filter((c) => c && c !== "Uncategorized" && c !== "Pria & Wanita") // Filtering common redundant M2M if desired
+      .filter((c) => c && typeof c === 'string' && c !== "Uncategorized" && c !== "Pria & Wanita" && c.trim() !== "")
       .sort();
     return ["All", ...uniqueCats];
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    if (!Array.isArray(products)) return [];
 
-    // LOGGING UNTUK DEBUGGING (Bisa dihapus nanti)
-    if (result.length > 0) {
-      console.log("Contoh data produk:", result[0]);
-      console.log("Filter yang dipilih:", filterCategories);
-    }
+    let result = products.filter(p => p && typeof p === 'object'); // Safe start
 
     // Filter by Category
     if (!filterCategories.includes("All")) {
       result = result.filter((p) => {
-        // Ambil kategori produk (handle jika kosong)
-        const rawCats = p.categories || (p.category ? [p.category] : []);
+        let rawCats = p.categories || [];
+        if (!rawCats.length && p.category) rawCats = [p.category];
 
-        // KONVERSI SEMUA KE STRING LOWERCASE
-        // Ini kuncinya: kita ambil properti .name atau .category_name jika bentuknya object
         const productCatNames = rawCats.map(cat => {
           if (typeof cat === 'string') return cat.toLowerCase();
-          // Sesuaikan 'name' atau 'category_name' dengan respons API backendmu
-          return (cat.name || cat.category_name || "").toLowerCase();
+          return (cat?.name || cat?.category_name || "").toLowerCase();
         });
 
-        // Cek apakah ada kecocokan dengan filter yang dipilih
+        // Check against selected filters
         return productCatNames.some((pc) =>
-          filterCategories.some(filter => filter.toLowerCase() === pc)
+          filterCategories.some(filter => filter && typeof filter === 'string' && filter.toLowerCase() === pc)
         );
       });
     }
 
-    // Filter by Search (Mock)
+    // Filter by Search
     if (searchQuery) {
       result = result.filter((p) => {
         const lang = i18n.language;
-        // Handle ko/kr mismatch if data uses 'kr' but lang is 'ko'
-        const name = p.name[lang] || (lang === 'ko' ? p.name['kr'] : null) || p.name["en"] || p.name;
-        return name.toLowerCase().includes(searchQuery.toLowerCase());
+        // Robust name extraction
+        let name = "";
+        if (p.name) {
+          if (typeof p.name === 'string') name = p.name;
+          else {
+            name = p.name[lang] ||
+              (lang === 'ko' ? p.name['kr'] : null) ||
+              p.name['en'] ||
+              Object.values(p.name)[0] || "";
+          }
+        }
+
+        return String(name).toLowerCase().includes(searchQuery.toLowerCase());
       });
     }
 
     // Sort
     if (sortBy === "price-asc") {
-      result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)); // Pastikan angka
+      result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     } else if (sortBy === "price-desc") {
       result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
     } else if (sortBy === "newest") {
-      // Asumsi sort berdasarkan ID jika tidak ada created_at, ID besar = baru
-      result.sort((a, b) => b.id - a.id);
+      result.sort((a, b) => (b.id || 0) - (a.id || 0));
     }
 
     return result;
@@ -183,9 +221,6 @@ const ProductList = () => {
             {filteredProducts.length} {t("common.itemsFound")}
           </span>
         </div>
-
-        {/* Mobile Filter Toggle (hidden on desktop generally, but useful) */}
-        {/* <button className="mobile-filter-btn"><Filter size={18} /> {t("common.filter")}</button> */}
       </div>
 
       <div className="shop-layout">

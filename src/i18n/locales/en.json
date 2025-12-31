@@ -215,7 +215,13 @@
         "upload": "Add Photos",
         "submit": "Submit Review",
         "color": "Color",
-        "size": "Size"
+        "size": "Size",
+        "submitted": "Review Submitted",
+        "thankYou": "Thank you for your feedback!",
+        "ratingRequired": "Rating Required",
+        "pleaseRate": "Please select a star rating",
+        "commentRequired": "Comment Required",
+        "pleaseComment": "Please write a review comment"
     },
     "profile": {
         "title": "Profile",
@@ -227,6 +233,7 @@
         "gender": "Gender",
         "birthDate": "Birth Date",
         "role": "Role",
-        "address": "Address"
+        "address": "Address",
+        "enterAddress": "Enter your address..."
     }
 }

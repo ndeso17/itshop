@@ -3,9 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Trash2, Plus, Minus, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
+import { useAuth } from "../context/AuthContext";
 
 const BuyNow = () => {
     const { t, i18n } = useTranslation();
+    const { user } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -31,9 +33,9 @@ const BuyNow = () => {
 
     // Form State
     const [formData, setFormData] = useState({
-        name: "",
-        phone: "",
-        address: ""
+        name: user?.full_name || "",
+        phone: user?.phone_number || user?.phone || user?.phoneNumber || "",
+        address: user?.address || ""
     });
 
     const [selectedVoucher, setSelectedVoucher] = useState("");
@@ -153,7 +155,7 @@ const BuyNow = () => {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
-                                placeholder="Jihn Doe"
+                                placeholder={t("cart.recipientName")}
                             />
                         </div>
                         <div className="form-group">
@@ -163,7 +165,7 @@ const BuyNow = () => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                placeholder="0812..."
+                                placeholder={t("cart.phoneNumber")}
                             />
                         </div>
                         <div className="form-group">
@@ -172,7 +174,7 @@ const BuyNow = () => {
                                 name="address"
                                 value={formData.address}
                                 onChange={handleInputChange}
-                                placeholder="Jl. Example No. 123..."
+                                placeholder={t("cart.address")}
                             />
                         </div>
                     </div>

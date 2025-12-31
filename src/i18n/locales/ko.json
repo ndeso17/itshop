@@ -119,7 +119,23 @@
         "exists": "이미 장바구니에 있는 상품입니다",
         "error": "상품 추가에 실패했습니다",
         "removed": "삭제되었습니다",
-        "cleared": "장바구니가 비워졌습니다"
+        "cleared": "장바구니가 비워졌습니다",
+        "createOrder": "주문하기",
+        "shippingAddress": "배송 주소",
+        "recipientName": "수령인 이름",
+        "phoneNumber": "전화번호",
+        "address": "전체 주소",
+        "promoVoucher": "프로모션 & 바우처",
+        "selectVoucher": "바우처 선택",
+        "shippingMethod": "배송 방법",
+        "selectShipping": "배송 선택",
+        "paymentMethod": "결제 방법",
+        "selectPayment": "결제 선택",
+        "paymentCODCheck": "COD - 확인 후 결제",
+        "paymentCOD": "COD (착불)",
+        "paymentCreditCard": "신용/직불 카드",
+        "paymentTransfer": "계좌 이체",
+        "paymentEWallet": "전자 지갑"
     },
     "wishlist": {
         "clearAll": "모두 삭제",
@@ -178,7 +194,13 @@
         "upload": "사진 추가",
         "submit": "리뷰 제출",
         "color": "색상",
-        "size": "사이즈"
+        "size": "사이즈",
+        "submitted": "리뷰 제출됨",
+        "thankYou": "피드백 감사합니다!",
+        "ratingRequired": "평점 필요",
+        "pleaseRate": "별점을 선택해주세요",
+        "commentRequired": "코멘트 필요",
+        "pleaseComment": "리뷰 코멘트를 작성해주세요"
     },
     "profile": {
         "title": "프로필",
@@ -189,6 +211,8 @@
         "phone": "전화번호",
         "gender": "성별",
         "birthDate": "생년월일",
-        "role": "역할"
+        "role": "역할",
+        "address": "주소",
+        "enterAddress": "주소를 입력하세요..."
     }
 }

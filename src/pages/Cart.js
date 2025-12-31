@@ -212,7 +212,9 @@ const Cart = () => {
                   />
                 </div>
                 <div className="item-image">
-                  <img src={item.image} alt={item.name} />
+                  <Link to={`/products/${item.id}`}>
+                    <img src={item.image} alt={item.name} />
+                  </Link>
                 </div>
                 <div className="item-details">
                   <div className="item-header">
@@ -228,7 +230,9 @@ const Cart = () => {
                     </button>
                   </div>
                   {item.category && (
-                    <div className="item-category">{item.category}</div>
+                    <div className="item-category">
+                      {t(`category.${item.category.toLowerCase()}`, { defaultValue: item.category })}
+                    </div>
                   )}
                   <div className="item-footer">
                     <div className="quantity-controls">
@@ -279,7 +283,7 @@ const Cart = () => {
               navigate("/buy-now", { state: { products: productsToCheckout } });
             }}
           >
-            {t("cart.proceedToCheckout")} ({selectedItems.length}) <ArrowRight size={18} />
+            {t("cart.proceedToCheckout")} <ArrowRight size={18} />
           </button>
           <div className="secure-checkout">
             <span>🔒 {t("cart.secureCheckout")}</span>

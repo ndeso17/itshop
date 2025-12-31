@@ -12,8 +12,10 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getProductBySlug } from "../api/catalog";
-import ProductCard from "../components/ui/ProductCard";
+import api from "../api/axios";
 import { addToCart, addToWishlist } from "../utils/cart";
+import { useAuth } from "../context/AuthContext";
+import Swal from "sweetalert2";
 
 const DUMMY_REVIEWS = [
   {
@@ -99,16 +101,138 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState("");
 
   // Review System State
+  const { user } = useAuth();
+  const [reviews, setReviews] = useState([]);
+  const [userRating, setUserRating] = useState(0);
   const [reviewVariant, setReviewVariant] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewFile, setReviewFile] = useState(null);
+
+  // Load reviews from local storage on mount/slug change
+  useEffect(() => {
+    if (!product) return;
+
+    // Load local reviews
+    const storageKey = `reviews_${product.id}`;
+    const localReviews = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+    // Combine with dummy reviews (optional: only show dummy if no local? or always mix?)
+    // For this demo, let's mix them so the list isn't empty initially
+    setReviews([...DUMMY_REVIEWS, ...localReviews]);
+  }, [product]);
+
+  const handleReviewSubmit = async () => {
+    if (userRating === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: t("reviews.ratingRequired") || "Rating Required",
+        text: t("reviews.pleaseRate") || "Please select a star rating",
+        timer: 2000,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    if (!reviewText.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: t("reviews.commentRequired") || "Comment Required",
+        text: t("reviews.pleaseComment") || "Please write a review comment",
+        timer: 2000,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    let imageBase64 = null;
+    if (reviewFile) {
+      try {
+        imageBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(reviewFile);
+        });
+      } catch (error) {
+        console.error("Error reading file:", error);
+        Swal.fire({
+          icon: 'error',
+          title: "Error",
+          text: "Failed to upload image",
+        });
+        return;
+      }
+    }
+
+    const newReview = {
+      id: Date.now(),
+      user: user ? (user.full_name || user.username || "User") : "Guest User",
+      rating: userRating,
+      date: new Date().toISOString().split('T')[0],
+      text: reviewText,
+      avatar: "https://ui-avatars.com/api/?name=" + (user ? (user.full_name || "User") : "Guest") + "&background=random",
+      color: reviewVariant.includes("Color:") ? reviewVariant.replace("Color:", "").trim() : null,
+      size: reviewVariant.includes("Size:") ? reviewVariant.replace("Size:", "").trim() : null,
+      image: imageBase64 // Save the base64 string
+    };
+
+    // Update state
+    const updatedReviews = [...reviews, newReview];
+    setReviews(updatedReviews);
+
+    // Save to local storage
+    const storageKey = `reviews_${product.id}`;
+    const existingLocal = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    localStorage.setItem(storageKey, JSON.stringify([...existingLocal, newReview]));
+
+    // Reset Form
+    setUserRating(0);
+    setReviewText("");
+    setReviewVariant("");
+    setReviewFile(null);
+
+    Swal.fire({
+      icon: 'success',
+      title: t("reviews.submitted") || "Review Submitted",
+      text: t("reviews.thankYou") || "Thank you for your feedback!",
+      timer: 2000,
+      showConfirmButton: false
+    });
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const data = await getProductBySlug(slug); // Data is { statusCode, message, data: { ... } }
-        const productData = data.data;
+        let productData;
+        let fetchSlug = slug;
+
+        // Mechanism 1: If slug looks like an ID, resolve it to a real slug first
+        // This handles navigation from Cart/Wishlist using IDs
+        if (!isNaN(slug)) {
+          try {
+            const listResponse = await api.get("/api/product/");
+            if (listResponse.data && listResponse.data.data) {
+              const found = listResponse.data.data.find(p => String(p.id) === String(slug));
+              if (found && found.slug) {
+                fetchSlug = found.slug;
+              }
+            }
+          } catch (resolutionError) {
+            console.warn("ID resolution failed, trying direct slug usage", resolutionError);
+          }
+        }
+
+        try {
+          const data = await getProductBySlug(fetchSlug);
+          productData = data.data;
+        } catch (slugError) {
+          console.error("Primary fetch failed", slugError);
+          // Fallback: If fetchSlug was different from slug, maybe try original?
+          // Or if simpler ID lookup works? 
+          // At this point if getProductBySlug failed with the resolved slug, the data is likely missing.
+          throw slugError;
+        }
 
         // Transform API data to component format
         const images =
@@ -416,7 +540,7 @@ const ProductDetail = () => {
 
         {/* Reviews List */}
         <div className="reviews-list">
-          {DUMMY_REVIEWS.map((review) => (
+          {reviews.map((review) => (
             <div key={review.id} className="review-card">
               <div className="review-header">
                 <div className="reviewer-info">
@@ -452,6 +576,16 @@ const ProductDetail = () => {
                   </div>
                 )}
                 <p className="review-text">{review.text}</p>
+                {review.image && (
+                  <div className="review-image-container" style={{ marginTop: "10px" }}>
+                    <img
+                      src={review.image}
+                      alt="Review attachment"
+                      style={{ maxWidth: "150px", borderRadius: "8px", border: "1px solid #eee", cursor: "pointer" }}
+                      onClick={() => window.open(review.image, "_blank")}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -467,7 +601,13 @@ const ProductDetail = () => {
             <label className="input-label">{t("reviews.rating")}</label>
             <div className="star-rating">
               {[1, 2, 3, 4, 5].map((star) => (
-                <button key={star} type="button" className="star-btn">
+                <button
+                  key={star}
+                  type="button"
+                  className={`star-btn ${star <= userRating ? "active" : ""}`}
+                  onClick={() => setUserRating(star)}
+                  style={{ color: star <= userRating ? "#FFD700" : "#ddd" }}
+                >
                   ★
                 </button>
               ))}
@@ -535,7 +675,10 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          <button className="btn btn-primary btn-submit-review">
+          <button
+            className="btn btn-primary btn-submit-review"
+            onClick={handleReviewSubmit}
+          >
             {t("reviews.submit")}
           </button>
         </div>

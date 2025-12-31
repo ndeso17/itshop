@@ -13,112 +13,137 @@ import { addToCart, addToWishlist } from "../../utils/cart";
 
 const ProductCard = ({ product }) => {
   const { t, i18n } = useTranslation();
-
-  const formatPrice = (price) => {
-    switch (i18n.language) {
-      case "id":
-        return new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 0,
-        }).format(price * 15000);
-      case "kr":
-        return new Intl.NumberFormat("ko-KR", {
-          style: "currency",
-          currency: "KRW",
-          minimumFractionDigits: 0,
-        }).format(price * 1300);
-      default:
-        return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(price);
-    }
-  };
+  const navigate = useNavigate();
   const [showShare, setShowShare] = useState(false);
 
-  const handleAddToCart = () => {
-    const lang = i18n.language;
-    const name = product.name[lang] || (lang === 'ko' ? product.name['kr'] : null) || product.name["en"];
+  // Safety check: if product is invalid, don't render or render placeholder
+  if (!product || typeof product !== 'object') {
+    return null;
+  }
 
+  // --- Helpers ---
+  const getProductName = () => {
+    if (!product.name) return "Product";
+    if (typeof product.name === 'string') return product.name;
+    // Handle object: try current lang -> kr/ko -> en -> first value
+    const lang = i18n.language;
+    return product.name[lang] ||
+      (lang === 'ko' ? product.name['kr'] : null) ||
+      (lang === 'kr' ? product.name['ko'] : null) || // Handle both codes
+      product.name['en'] ||
+      Object.values(product.name)[0] ||
+      "Product";
+  };
+
+  const getProductCategory = () => {
+    let cat = product.category;
+    if (!cat && product.categories && product.categories.length > 0) {
+      cat = product.categories[0];
+    }
+    if (!cat) return "General";
+
+    if (typeof cat === 'object') {
+      cat = cat.name || cat.category_name || "General";
+    }
+    return String(cat);
+  };
+
+  const formatPrice = (price) => {
+    if (price === undefined || price === null) return "";
+    try {
+      switch (i18n.language) {
+        case "id":
+          return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+          }).format(price * 15000);
+        case "kr":
+        case "ko":
+        case "ko-KR":
+          return new Intl.NumberFormat("ko-KR", {
+            style: "currency",
+            currency: "KRW",
+            minimumFractionDigits: 0,
+          }).format(price * 1300);
+        default:
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(price);
+      }
+    } catch (err) {
+      return price; // Fallback
+    }
+  };
+
+  // --- Handlers ---
+  const productName = getProductName();
+  const categoryName = getProductCategory();
+
+  const handleAddToCart = () => {
     const productData = {
       id: product.id,
-      name: name,
+      name: productName,
       price: product.price,
       image: product.image,
-      category:
-        product.category || (product.categories && product.categories[0]),
+      category: categoryName,
     };
     addToCart(productData, t);
   };
 
   const handleAddToWishlist = () => {
-    const lang = i18n.language;
-    const name = product.name[lang] || (lang === 'ko' ? product.name['kr'] : null) || product.name["en"];
-
     const productData = {
       id: product.id,
-      name: name,
+      name: productName,
       price: product.price,
       image: product.image,
-      category:
-        product.category || (product.categories && product.categories[0]),
+      category: categoryName,
     };
     addToWishlist(productData, t);
   };
 
-  const navigate = useNavigate();
-
   const handleBuyNow = () => {
-    const lang = i18n.language;
-    const name = product.name[lang] || (lang === 'ko' ? product.name['kr'] : null) || product.name["en"];
-
     const productData = {
       id: product.id,
-      name: name,
+      slug: product.slug,
+      name: productName,
       price: product.price,
       image: product.image,
-      category:
-        product.category || (product.categories && product.categories[0]),
+      category: categoryName,
     };
-
     navigate('/buy-now', { state: { product: productData } });
   };
 
   const handleShare = (platform) => {
-    const url = window.location.href + "products/" + product.id; // Basic approximation, better if passed prop or absolute
-    const text = `Check out ${product.name[i18n.language] || product.name["en"]
-      }!`;
-
+    const url = window.location.href.split('?')[0].replace(/\/$/, '') + "/products/" + (product.id || '');
+    const text = `Check out ${productName}!`;
     let shareLink = "";
+
     if (platform === "facebook") {
-      shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        url
-      )}`;
+      shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
     } else if (platform === "whatsapp") {
       shareLink = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
     } else if (platform === "instagram") {
-      // Direct sharing to IG is limited on web, copying link is a safe fallback
       navigator.clipboard.writeText(url);
-      alert(t("product.linkCopied"));
+      alert(t("product.linkCopied") || "Link Copied!");
       setShowShare(false);
       return;
     }
 
-    if (shareLink) {
-      window.open(shareLink, "_blank");
-    }
+    if (shareLink) window.open(shareLink, "_blank");
     setShowShare(false);
   };
 
   return (
     <div className="product-card fade-in">
       <div className="product-image-wrapper">
-        <Link to={`/products/${product.slug}`}>
+        <Link to={`/products/${product.slug || product.id}`}>
           <img
             src={product.image}
-            alt={product.name[i18n.language] || (i18n.language === 'ko' ? product.name['kr'] : null) || product.name["en"]}
+            alt={productName}
             loading="lazy"
+            onError={(e) => { e.target.src = "https://via.placeholder.com/300x400?text=No+Image" }} // Fallback image
           />
         </Link>
         {product.isNew && <span className="badge-new">{t("product.new")}</span>}
@@ -167,18 +192,11 @@ const ProductCard = ({ product }) => {
 
       <div className="product-details">
         <div className="product-category">
-          {(() => {
-            const catName =
-              product.categories && product.categories.length > 0
-                ? product.categories[0]
-                : product.category || "General";
-            const catKey = `category.${catName.toLowerCase()}`;
-            return t(catKey, { defaultValue: catName });
-          })()}
+          {t(`category.${categoryName.toLowerCase()}`, { defaultValue: categoryName })}
         </div>
         <h3 className="product-title">
           <Link to={`/products/${product.id}`}>
-            {product.name[i18n.language] || (i18n.language === 'ko' ? product.name['kr'] : null) || product.name["en"]}
+            {productName}
           </Link>
         </h3>
         <div className="product-footer">
@@ -426,7 +444,7 @@ const ProductCard = ({ product }) => {
         }
 
         .btn-buy-now {
-            background: var(--darker); /* Or a different color if preferred */
+            background: var(--darker);
             color: #fff;
             border: none;
             padding: 8px 12px;

@@ -196,7 +196,13 @@
         "upload": "Tambah Foto",
         "submit": "Kirim Ulasan",
         "color": "Warna",
-        "size": "Ukuran"
+        "size": "Ukuran",
+        "submitted": "Ulasan Terkirim",
+        "thankYou": "Terima kasih atas masukan Anda!",
+        "ratingRequired": "Penilaian Diperlukan",
+        "pleaseRate": "Silakan pilih bintang penilaian",
+        "commentRequired": "Komentar Diperlukan",
+        "pleaseComment": "Silakan tulis komentar ulasan"
     },
     "profile": {
         "title": "Profil",
@@ -208,6 +214,7 @@
         "gender": "Jenis Kelamin",
         "birthDate": "Tanggal Lahir",
         "role": "Peran",
-        "address": "Alamat"
+        "address": "Alamat",
+        "enterAddress": "Masukkan alamat Anda..."
     }
 }

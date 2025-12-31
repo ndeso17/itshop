@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingBag, Heart, Search, Menu, X, User } from "lucide-react"; // Ensure lucide-react is installed
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
@@ -9,7 +9,38 @@ import LanguageSwitcher from "../ui/LanguageSwitcher";
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const { t } = useTranslation();
+  const location = useLocation();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+
+    // Logic to preserve category if we are already on /products page
+    if (location.pathname === '/products') {
+      const currentParams = new URLSearchParams(location.search);
+      if (query.trim()) {
+        currentParams.set('search', query.trim());
+      } else {
+        currentParams.delete('search');
+      }
+      navigate(`/products?${currentParams.toString()}`);
+    } else {
+      // Global search from other pages
+      if (query.trim()) {
+        navigate(`/products?search=${encodeURIComponent(query)}`);
+      } else {
+        navigate('/products');
+      }
+    }
+  };
+
+  const handleChange = (e) => {
+    handleSearch(e.target.value);
+  };
+  // Remove handleKeyDown as it's no longer strictly needed for triggering search, but can keep for form submission feel if needed. 
+  // Actually since we search on change, KeyDown Enter is redundant but harmless.
+  // However, the requested behavior 'typing one letter... directly appear' means we must specificallly use onChange.
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -62,8 +93,15 @@ const Navbar = () => {
                 type="text"
                 placeholder={t("common.searchPlaceholder")}
                 className="nav-search-input"
+                value={searchQuery}
+                onChange={handleChange}
               />
-              <Search size={18} className="search-icon" />
+              <Search
+                size={18}
+                className="search-icon"
+                onClick={() => handleSearch(searchQuery)}
+                style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+              />
             </div>
 
             <LanguageSwitcher />

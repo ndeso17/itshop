@@ -126,7 +126,7 @@ const Profile = () => {
                 value={formData.full_name}
                 onChange={handleInputChange}
                 className="edit-input-name"
-                placeholder="Full Name"
+                placeholder={t("profile.fullName") || "Full Name"}
               />
             ) : (
               <h2 className="profile-name">{user.full_name || "User"}</h2>
@@ -135,7 +135,7 @@ const Profile = () => {
           </div>
 
           <div className="profile-details">
-            {/* Username */}
+            {/* Row 1: Username & Phone */}
             <div className="detail-item">
               <div className="detail-icon">
                 <User size={20} />
@@ -156,18 +156,6 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Email (Read Only) */}
-            <div className="detail-item">
-              <div className="detail-icon">
-                <Mail size={20} />
-              </div>
-              <div className="detail-content">
-                <label>{t("profile.email") || "Email"}</label>
-                <p className="read-only">{user.email}</p>
-              </div>
-            </div>
-
-            {/* Phone */}
             <div className="detail-item">
               <div className="detail-icon">
                 <Phone size={20} />
@@ -188,7 +176,7 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Gender */}
+            {/* Row 2: Gender & Birth Date */}
             <div className="detail-item">
               <div className="detail-icon">
                 <User size={20} />
@@ -218,7 +206,6 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Birth Date */}
             <div className="detail-item">
               <div className="detail-icon">
                 <Calendar size={20} />
@@ -239,7 +226,18 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Address (New) */}
+            {/* Row 3: Email (Full Width) */}
+            <div className="detail-item full-width">
+              <div className="detail-icon">
+                <Mail size={20} />
+              </div>
+              <div className="detail-content">
+                <label>{t("profile.email") || "Email"}</label>
+                <p className="read-only">{user.email}</p>
+              </div>
+            </div>
+
+            {/* Row 4: Address (Full Width) */}
             <div className="detail-item full-width">
               <div className="detail-icon">
                 <MapPin size={20} />
@@ -252,7 +250,7 @@ const Profile = () => {
                     value={formData.address}
                     onChange={handleInputChange}
                     className="edit-input edit-textarea"
-                    placeholder="Enter your address..."
+                    placeholder={t("profile.enterAddress") || "Enter your address..."}
                   />
                 ) : (
                   <p>{user.address || "-"}</p>
@@ -382,6 +380,8 @@ const Profile = () => {
           font-size: 16px;
           font-weight: 500;
           color: var(--darker);
+          word-break: break-word;
+          line-height: 1.4;
         }
 
         @media (max-width: 768px) {

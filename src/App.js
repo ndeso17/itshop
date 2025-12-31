@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import ErrorBoundary from "./components/layout/ErrorBoundary";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
@@ -23,7 +24,11 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <LanguageProvider>
-          <AppContent />
+          <LanguageProvider>
+            <ErrorBoundary>
+              <AppContent />
+            </ErrorBoundary>
+          </LanguageProvider>
         </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>
