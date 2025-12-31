@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeEi Collection</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container nav-wrapper">
+            <a href="index.html" class="logo">FoodMart<span style="color:var(--secondary)">.</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#categories">Categories</a></li>
+                </ul>
+            </nav>
+            <div class="nav-icons">
+                <a href="wishlist.html" class="icon-btn" style="color: var(--primary);">
+                    <i class="fas fa-heart"></i>
+                </a>
+                <a href="cart.html" class="icon-btn">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="badge" id="cart-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 style="margin: 2rem 0;">My Wishlist</h1>
+
+        <p style="color: var(--gray);">This is where your favorite items will appear. (Functionality hooked up to
+            localStorage, items will show here if added).</p>
+
+        <!-- We can reuse product grid styles here if we strictly implement the JS logic to render wishlist items. 
+             For now, I'll add a placeholder message or simple grid if empty. -->
+
+        <div id="product-grid" class="product-grid">
+            <!-- Reuse render logic but filter by wishlist in a real app. 
+                 Since the current script.js renders ALL products to 'product-grid', 
+                 I'll leave it as is for demo, but in a real scenario we'd filter.
+                 To make it clearer, I'll update script.js slightly or just let the user see the grid for consistency.
+            -->
+        </div>
+
+    </main>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Override render for wishlist page specifically
+        const originalRender = renderProducts;
+        renderProducts = () => {
+            const grid = document.getElementById('product-grid');
+            if (!grid) return;
+
+            // Filter products that are in wishlist
+            const wishlistItems = products.filter(p => wishlist.includes(p.id));
+
+            if (wishlistItems.length === 0) {
+                grid.innerHTML = '<p>No items in wishlist.</p>';
+                return;
+            }
+
+            grid.innerHTML = wishlistItems.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <div class="product-category">${product.category}</div>
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">${formatIDR(product.price)}</div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem" onclick="goToDetail(${product.id})">Detail</button>
+                             <button class="btn-add" onclick="toggleWishlist(${product.id})" style="margin-left:5px; background: var(--light); color: var(--secondary)">
+                                 <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Re-run render
+        renderProducts();
+    </script>
+</body>
+
+</html>

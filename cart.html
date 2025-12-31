@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeEi Collection</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container nav-wrapper">
+            <a href="index.html" class="logo">FoodMart<span style="color:var(--secondary)">.</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#categories">Categories</a></li>
+                </ul>
+            </nav>
+            <div class="nav-icons">
+                <a href="wishlist.html" class="icon-btn">
+                    <i class="far fa-heart"></i>
+                </a>
+                <a href="cart.html" class="icon-btn" style="color: var(--primary);">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="badge" id="cart-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 style="margin-top: 2rem;">Shopping Cart</h1>
+
+        <div class="cart-container">
+            <div id="cart-items" class="cart-items">
+                <!-- Cart items injected here -->
+            </div>
+
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div style="margin: 1.5rem 0; font-size: 0.9rem; color: var(--gray);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal" style="color: var(--dark); font-weight: 600;">Rp 0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Shipping</span>
+                        <span style="color: var(--primary);">Free</span>
+                    </div>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700;">
+                    <span>Total</span>
+                    <span id="cart-total">Rp 0</span>
+                </div>
+                <button onclick="window.location.href='checkout.html'" class="btn btn-primary"
+                    style="width: 100%;">Proceed to Checkout</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

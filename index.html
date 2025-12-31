@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeEi Collection</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container nav-wrapper">
+            <a href="index.html" class="logo">TeEi Collection<span style="color:var(--secondary)">.</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#categories">Categories</a></li>
+                    <li><a href="#popular">Popular</a></li>
+                </ul>
+            </nav>
+            <div class="nav-icons">
+                <a href="wishlist.html" class="icon-btn">
+                    <i class="far fa-heart"></i>
+                </a>
+                <a href="cart.html" class="icon-btn">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="badge" id="cart-badge">0</span>
+                </a>
+                <a href="#" class="icon-btn"><i class="far fa-user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Search Section -->
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for products, brands and more...">
+            <i class="fas fa-search"
+                style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--gray);"></i>
+        </div>
+
+        <!-- Banner -->
+        <div
+            style="background: linear-gradient(to right, var(--primary), var(--secondary)); border-radius: 20px; padding: 3rem; color: white; margin-bottom: 3rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: white;">Fresh & High Quality<br>Products For
+                    You</h1>
+                <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.9);">Up to 50% off on selected items this week.
+                </p>
+                <a href="#product-grid" class="btn btn-secondary" style="border:none; color: var(--primary)">Shop
+                    Now</a>
+            </div>
+            <!-- Illustration placeholder could go here -->
+        </div>
+
+        <!-- Categories -->
+        <h2 style="margin-bottom: 1.5rem;" id="categories">Categories</h2>
+        <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; margin-bottom: 2rem;">
+            <button class="btn btn-primary">All</button>
+            <button class="btn btn-secondary">Men</button>
+            <button class="btn btn-secondary">Women</button>
+            <button class="btn btn-secondary">Kids</button>
+            <button class="btn btn-secondary">Baby</button>
+        </div>
+
+        <!-- Product List -->
+        <h2 style="margin-bottom: 1rem;" id="popular">Popular Products</h2>
+        <div id="product-grid" class="product-grid">
+            <!-- Products will be injected here by JS -->
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h4>FoodMart.</h4>
+                <p style="color: var(--gray);">The best place to find high quality products for your daily needs.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Customer Service</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Payment Methods</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Returns</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container" style="text-align: center; color: var(--gray); margin-top: 2rem; font-size: 0.9rem;">
+            &copy; 2024 FoodMart. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

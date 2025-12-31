@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeEi Collection</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container nav-wrapper">
+            <a href="index.html" class="logo">FoodMart<span style="color:var(--secondary)">.</span></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 style="margin-top: 2rem;">Checkout</h1>
+
+        <div class="cart-container"> <!-- Reuse cart layout -->
+            <div class="checkout-form">
+                <h3 style="margin-bottom: 1.5rem;">Shipping Information</h3>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-input" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" class="form-input" placeholder="Street name, house number">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" class="form-input" placeholder="Jakarta">
+                    </div>
+                    <div class="form-group">
+                        <label>Postal Code</label>
+                        <input type="text" class="form-input" placeholder="10110">
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1.5rem;">Payment Method</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <label class="cart-item" style="margin: 0; padding: 1rem; border: 1px solid #ddd; cursor: pointer;">
+                        <input type="radio" name="payment" checked>
+                        <span style="margin-left: 10px;">Bank Transfer (BCA)</span>
+                    </label>
+                    <label class="cart-item" style="margin: 0; padding: 1rem; border: 1px solid #ddd; cursor: pointer;">
+                        <input type="radio" name="payment">
+                        <span style="margin-left: 10px;">Credit Card</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <h3>Your Order</h3>
+                <div id="checkout-items" style="margin-bottom: 1.5rem; max-height: 200px; overflow-y: auto;">
+                    <!-- Items -->
+                </div>
+
+                <div class="form-group">
+                    <label>Promo Code</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" class="form-input" placeholder="CODE123">
+                        <button class="btn btn-secondary">Apply</button>
+                    </div>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700; border-top: 1px solid #eee; padding-top: 1rem;">
+                    <span>Total</span>
+                    <span id="checkout-total">Rp 0</span>
+                </div>
+                <button onclick="window.location.href='payment.html'" class="btn btn-primary" style="width: 100%;">Place
+                    Order</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
