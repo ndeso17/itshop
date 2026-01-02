@@ -5,6 +5,9 @@ import React, {
   useEffect,
   useRef,
 } from "react";
+import { useNavigate } from "react-router-dom";
+import { setLogoutHandler, setUpdateTokenHandler } from "../api/axios";
+
 import * as authAPI from "../api/auth";
 import Swal from "sweetalert2";
 
@@ -15,6 +18,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("userData");
     return savedUser ? JSON.parse(savedUser) : null;
@@ -30,13 +34,15 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(null);
     setUser(null);
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("userData");
     localStorage.removeItem("hasAuth");
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
       refreshIntervalRef.current = null;
     }
-  }, []);
+    navigate("/login");
+  }, [navigate]);
 
   // Auto-refresh token every 9 minutes (540,000ms)
   const startAutoRefresh = React.useCallback(() => {
@@ -50,7 +56,7 @@ export const AuthProvider = ({ children }) => {
       console.log("[Auth] Auto-refreshing token...");
       const result = await authAPI.refreshToken();
 
-      if (result.success) {
+      if (result.success && result.data) {
         setUser(result.data.user);
         localStorage.setItem("accessToken", result.data.token);
         localStorage.setItem("userData", JSON.stringify(result.data.user));
@@ -61,6 +67,19 @@ export const AuthProvider = ({ children }) => {
         performLogout();
       }
     }, 540000); // 9 minutes
+  }, [performLogout]);
+
+  // Register axios handlers
+  useEffect(() => {
+    setLogoutHandler(performLogout);
+    setUpdateTokenHandler((token) => {
+      setAccessToken(token);
+      localStorage.setItem("accessToken", token);
+    });
+    return () => {
+      setLogoutHandler(null);
+      setUpdateTokenHandler(null);
+    };
   }, [performLogout]);
 
   const isInitializingRef = useRef(false);
@@ -100,7 +119,9 @@ export const AuthProvider = ({ children }) => {
               setUser(null);
               setAccessToken(null);
             } else {
-              console.log("[Auth] Keeping local session despite refresh failure (likely network or rate limit)");
+              console.log(
+                "[Auth] Keeping local session despite refresh failure (likely network or rate limit)"
+              );
               startAutoRefresh(); // Try again later
             }
           }
@@ -162,6 +183,9 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(result.data.token);
       setUser(result.data.user);
       localStorage.setItem("accessToken", result.data.token);
+      if (result.data.refresh_token) {
+        localStorage.setItem("refreshToken", result.data.refresh_token);
+      }
       localStorage.setItem("userData", JSON.stringify(result.data.user));
       localStorage.setItem("hasAuth", "true");
 

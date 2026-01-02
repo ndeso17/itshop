@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import OTPModal from "../components/auth/OTPModal";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -28,13 +29,25 @@ const Login = () => {
 
     const result = await login(email, password);
 
-    if (result.success) {
+    if (result.success && result.data) {
       // Show OTP modal
       setOtpData({
         email: result.data.email,
         device_id: result.data.device_id,
       });
       setShowOTPModal(true);
+    } else if (result.success) {
+      // Account pending or other state where login is technically success but no data (cannot proceed)
+      Swal.fire({
+        icon: "warning",
+        title: "Information",
+        text: result.message,
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "swal-custom-popup",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
     }
 
     setLoading(false);

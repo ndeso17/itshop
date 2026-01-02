@@ -133,7 +133,16 @@ export const logout = async () => {
  */
 export const refreshToken = async () => {
   try {
-    const response = await api.post("/api/auth/refresh");
+    const refreshToken = localStorage.getItem("refreshToken");
+    const response = await api.post(
+      "/api/auth/refresh",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      }
+    );
 
     return {
       success: true,

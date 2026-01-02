@@ -17,22 +17,24 @@ const ProductCard = ({ product }) => {
   const [showShare, setShowShare] = useState(false);
 
   // Safety check: if product is invalid, don't render or render placeholder
-  if (!product || typeof product !== 'object') {
+  if (!product || typeof product !== "object") {
     return null;
   }
 
   // --- Helpers ---
   const getProductName = () => {
     if (!product.name) return "Product";
-    if (typeof product.name === 'string') return product.name;
+    if (typeof product.name === "string") return product.name;
     // Handle object: try current lang -> kr/ko -> en -> first value
     const lang = i18n.language;
-    return product.name[lang] ||
-      (lang === 'ko' ? product.name['kr'] : null) ||
-      (lang === 'kr' ? product.name['ko'] : null) || // Handle both codes
-      product.name['en'] ||
+    return (
+      product.name[lang] ||
+      (lang === "ko" ? product.name["kr"] : null) ||
+      (lang === "kr" ? product.name["ko"] : null) || // Handle both codes
+      product.name["en"] ||
       Object.values(product.name)[0] ||
-      "Product";
+      "Product"
+    );
   };
 
   const getProductCategory = () => {
@@ -42,7 +44,7 @@ const ProductCard = ({ product }) => {
     }
     if (!cat) return "General";
 
-    if (typeof cat === 'object') {
+    if (typeof cat === "object") {
       cat = cat.name || cat.category_name || "General";
     }
     return String(cat);
@@ -72,7 +74,7 @@ const ProductCard = ({ product }) => {
             currency: "USD",
           }).format(price);
       }
-    } catch (err) {
+    } catch {
       return price; // Fallback
     }
   };
@@ -112,16 +114,21 @@ const ProductCard = ({ product }) => {
       image: product.image,
       category: categoryName,
     };
-    navigate('/buy-now', { state: { product: productData } });
+    navigate("/buy-now", { state: { product: productData } });
   };
 
   const handleShare = (platform) => {
-    const url = window.location.href.split('?')[0].replace(/\/$/, '') + "/products/" + (product.id || '');
+    const url =
+      window.location.href.split("?")[0].replace(/\/$/, "") +
+      "/products/" +
+      (product.id || "");
     const text = `Check out ${productName}!`;
     let shareLink = "";
 
     if (platform === "facebook") {
-      shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        url
+      )}`;
     } else if (platform === "whatsapp") {
       shareLink = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
     } else if (platform === "instagram") {
@@ -143,7 +150,10 @@ const ProductCard = ({ product }) => {
             src={product.image}
             alt={productName}
             loading="lazy"
-            onError={(e) => { e.target.src = "https://via.placeholder.com/300x400?text=No+Image" }} // Fallback image
+            onError={(e) => {
+              e.target.src =
+                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect fill='%23eee' width='300' height='400'/%3E%3Ctext fill='%23aaa' font-family='sans-serif' font-size='30' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
+            }} // Fallback image
           />
         </Link>
         {product.isNew && <span className="badge-new">{t("product.new")}</span>}
@@ -192,12 +202,12 @@ const ProductCard = ({ product }) => {
 
       <div className="product-details">
         <div className="product-category">
-          {t(`category.${categoryName.toLowerCase()}`, { defaultValue: categoryName })}
+          {t(`category.${categoryName.toLowerCase()}`, {
+            defaultValue: categoryName,
+          })}
         </div>
         <h3 className="product-title">
-          <Link to={`/products/${product.id}`}>
-            {productName}
-          </Link>
+          <Link to={`/products/${product.id}`}>{productName}</Link>
         </h3>
         <div className="product-footer">
           <span className="product-price">{formatPrice(product.price)}</span>
