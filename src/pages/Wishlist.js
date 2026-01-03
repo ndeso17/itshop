@@ -4,11 +4,13 @@ import { Trash2, ShoppingBag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { products } from "../data/products";
-import { addToCart } from "../utils/cart";
+import { addToCart as apiAddToCart } from "../api/cart";
+import { useAuth } from "../context/AuthContext";
 
 const Wishlist = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   // Initialize from localStorage
   const [wishlistItems, setWishlistItems] = useState(() => {
     try {
@@ -27,7 +29,10 @@ const Wishlist = () => {
 
   const handleBuyNow = (product) => {
     const lang = i18n.language;
-    const name = product.name[lang] || (lang === 'ko' ? product.name['kr'] : null) || product.name["en"];
+    const name =
+      product.name[lang] ||
+      (lang === "ko" ? product.name["kr"] : null) ||
+      product.name["en"];
 
     const productData = {
       id: product.id,
@@ -39,7 +44,7 @@ const Wishlist = () => {
         product.category || (product.categories && product.categories[0]),
     };
 
-    navigate('/buy-now', { state: { product: productData } });
+    navigate("/buy-now", { state: { product: productData } });
   };
 
   const removeFromWishlist = (id) => {
@@ -101,9 +106,39 @@ const Wishlist = () => {
     });
   };
 
-  const handleMoveToCart = (product) => {
-    addToCart(product, t);
-    removeFromWishlist(product.id);
+  const handleMoveToCart = async (product) => {
+    if (!user) {
+      Swal.fire({
+        icon: "warning",
+        title: t("auth.loginRequired") || "Login Required",
+        text: t("auth.pleaseLogin"),
+        showCancelButton: true,
+        confirmButtonText: t("auth.login") || "Login",
+        cancelButtonText: t("common.cancel") || "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) navigate("/login");
+      });
+      return;
+    }
+
+    const result = await apiAddToCart({ variant_id: product.id, qty: 1 });
+
+    if (result.success) {
+      Swal.fire({
+        icon: "success",
+        title: t("cart.added"),
+        text: result.message,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      removeFromWishlist(product.id);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: t("cart.error"),
+        text: result.message,
+      });
+    }
   };
 
   const formatPrice = (price) => {
@@ -119,7 +154,11 @@ const Wishlist = () => {
     }
 
     // Check for 'kr' or 'ko' or 'ko-KR'
-    if (i18n.language === "kr" || i18n.language === "ko" || i18n.language === "ko-KR") {
+    if (
+      i18n.language === "kr" ||
+      i18n.language === "ko" ||
+      i18n.language === "ko-KR"
+    ) {
       return new Intl.NumberFormat("ko-KR", {
         style: "currency",
         currency: "KRW",
@@ -164,17 +203,27 @@ const Wishlist = () => {
         {wishlistItems.map((item) => {
           // Find full product details to support dynamic translation
           // Ensure both IDs are compared as strings or numbers
-          const productDetails = products.find(p => String(p.id) === String(item.id)) || item;
+          const productDetails =
+            products.find((p) => String(p.id) === String(item.id)) || item;
 
           // Name Translation
           let displayName = productDetails.name;
-          if (typeof productDetails.name === 'object') {
-            displayName = productDetails.name[i18n.language] || (i18n.language === 'kr' ? productDetails.name['ko'] : null) || (i18n.language === 'ko' ? productDetails.name['kr'] : null) || productDetails.name["en"];
+          if (typeof productDetails.name === "object") {
+            displayName =
+              productDetails.name[i18n.language] ||
+              (i18n.language === "kr" ? productDetails.name["ko"] : null) ||
+              (i18n.language === "ko" ? productDetails.name["kr"] : null) ||
+              productDetails.name["en"];
           }
 
           // Category Translation
-          const categoryName = productDetails.category || (productDetails.categories && productDetails.categories[0]) || "General";
-          const displayCategory = t(`category.${categoryName.toLowerCase()}`, { defaultValue: categoryName });
+          const categoryName =
+            productDetails.category ||
+            (productDetails.categories && productDetails.categories[0]) ||
+            "General";
+          const displayCategory = t(`category.${categoryName.toLowerCase()}`, {
+            defaultValue: categoryName,
+          });
 
           return (
             <div key={item.id} className="wishlist-item fade-in">
@@ -188,7 +237,9 @@ const Wishlist = () => {
                 <Link to={`/products/${item.id}`} className="item-name">
                   {displayName}
                 </Link>
-                <span className="item-price">{formatPrice(productDetails.price)}</span>
+                <span className="item-price">
+                  {formatPrice(productDetails.price)}
+                </span>
 
                 <div className="item-actions">
                   <button

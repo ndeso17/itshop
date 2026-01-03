@@ -9,14 +9,19 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { addToCart, addToWishlist } from "../../utils/cart";
+import { addToWishlist } from "../../utils/cart";
+import { addToCart as apiAddToCart } from "../../api/cart";
+import { useAuth } from "../../context/AuthContext";
+import Swal from "sweetalert2";
 
 const ProductCard = ({ product }) => {
+  // console.log("Ini Product : ", product);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showShare, setShowShare] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
-  // Safety check: if product is invalid, don't render or render placeholder
   if (!product || typeof product !== "object") {
     return null;
   }
@@ -25,12 +30,11 @@ const ProductCard = ({ product }) => {
   const getProductName = () => {
     if (!product.name) return "Product";
     if (typeof product.name === "string") return product.name;
-    // Handle object: try current lang -> kr/ko -> en -> first value
     const lang = i18n.language;
     return (
       product.name[lang] ||
       (lang === "ko" ? product.name["kr"] : null) ||
-      (lang === "kr" ? product.name["ko"] : null) || // Handle both codes
+      (lang === "kr" ? product.name["ko"] : null) ||
       product.name["en"] ||
       Object.values(product.name)[0] ||
       "Product"
@@ -43,7 +47,6 @@ const ProductCard = ({ product }) => {
       cat = product.categories[0];
     }
     if (!cat) return "General";
-
     if (typeof cat === "object") {
       cat = cat.name || cat.category_name || "General";
     }
@@ -79,22 +82,55 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  // --- Handlers ---
   const productName = getProductName();
   const categoryName = getProductCategory();
 
-  const handleAddToCart = () => {
-    const productData = {
-      id: product.id,
-      name: productName,
-      price: product.price,
-      image: product.image,
-      category: categoryName,
-    };
-    addToCart(productData, t);
+  const handleAddToCart = async (e) => {
+    e.preventDefault(); // Prevent link navigation
+    if (!user) {
+      Swal.fire({
+        icon: "warning",
+        title: t("auth.loginRequired") || "Login Required",
+        text: t("auth.pleaseLogin") || "Please login to add items to cart",
+        showCancelButton: true,
+        confirmButtonText: t("auth.login") || "Login",
+        cancelButtonText: t("common.cancel") || "Cancel",
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-outline-secondary",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
+      return;
+    }
+
+    const result = await apiAddToCart({ variant_id: product.id, qty: 1 });
+
+    if (result.success) {
+      Swal.fire({
+        icon: "success",
+        title: t("cart.added"),
+        text: result.message,
+        timer: 1500,
+        showConfirmButton: false,
+        toast: true,
+        position: "top-end",
+        customClass: { popup: "colored-toast" }, // Uses our custom CSS
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: t("cart.error"),
+        text: result.message,
+      });
+    }
   };
 
-  const handleAddToWishlist = () => {
+  const handleAddToWishlist = (e) => {
+    e.preventDefault();
     const productData = {
       id: product.id,
       name: productName,
@@ -105,19 +141,10 @@ const ProductCard = ({ product }) => {
     addToWishlist(productData, t);
   };
 
-  const handleBuyNow = () => {
-    const productData = {
-      id: product.id,
-      slug: product.slug,
-      name: productName,
-      price: product.price,
-      image: product.image,
-      category: categoryName,
-    };
-    navigate("/buy-now", { state: { product: productData } });
-  };
+  const handleShare = (platform, e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const handleShare = (platform) => {
     const url =
       window.location.href.split("?")[0].replace(/\/$/, "") +
       "/products/" +
@@ -133,7 +160,14 @@ const ProductCard = ({ product }) => {
       shareLink = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
     } else if (platform === "instagram") {
       navigator.clipboard.writeText(url);
-      alert(t("product.linkCopied") || "Link Copied!");
+      Swal.fire({
+        icon: "success",
+        title: t("product.linkCopied"),
+        toast: true,
+        position: "top-end",
+        timer: 1500,
+        showConfirmButton: false,
+      });
       setShowShare(false);
       return;
     }
@@ -142,335 +176,125 @@ const ProductCard = ({ product }) => {
     setShowShare(false);
   };
 
-  return (
-    <div className="product-card fade-in">
-      <div className="product-image-wrapper">
-        <Link to={`/products/${product.slug || product.id}`}>
-          <img
-            src={product.image}
-            alt={productName}
-            loading="lazy"
-            onError={(e) => {
-              e.target.src =
-                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect fill='%23eee' width='300' height='400'/%3E%3Ctext fill='%23aaa' font-family='sans-serif' font-size='30' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
-            }} // Fallback image
-          />
-        </Link>
-        {product.isNew && <span className="badge-new">{t("product.new")}</span>}
+  // --- Image Helper ---
+  const getImageUrl = () => {
+    if (product.images && product.images.length > 0) {
+      return product.images[0];
+    }
+    if (product.image) {
+      return product.image;
+    }
+    return null;
+  };
 
-        <div className="action-buttons">
+  const imageUrl = getImageUrl();
+  const placeholderImg =
+    "https://www.dummyimg.in/placeholder?width=300&height=350";
+
+  return (
+    <div className="card h-100 border-0 shadow-sm product-card">
+      <div className="position-relative overflow-hidden rounded-top">
+        <Link to={`/products/${product.slug || product.id}`}>
+          <div className="ratio ratio-4x5 bg-secondary-subtle">
+            <img
+              src={!imgError && imageUrl ? imageUrl : placeholderImg}
+              className="card-img-top object-fit-cover w-100 h-100"
+              alt={productName}
+              loading="lazy"
+              onError={() => setImgError(true)}
+            />
+          </div>
+        </Link>
+
+        {product.isNew && (
+          <span className="position-absolute top-0 start-0 m-2 badge bg-primary">
+            {t("product.new")}
+          </span>
+        )}
+
+        <div className="position-absolute top-0 end-0 m-2 d-flex flex-column gap-2">
           <button
-            className="btn-icon btn-share"
-            title={t("product.share")}
-            onClick={() => setShowShare(!showShare)}
+            className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+            style={{ width: "32px", height: "32px" }}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowShare(!showShare);
+            }}
           >
-            <Share2 size={18} />
+            <Share2 size={16} />
           </button>
           <button
-            className="btn-icon btn-wishlist"
-            title={t("product.addToWishlist")}
+            className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+            style={{ width: "32px", height: "32px" }}
             onClick={handleAddToWishlist}
           >
-            <Heart size={18} />
+            <Heart size={16} />
           </button>
         </div>
 
-        {/* Share Menu */}
+        {/* Share Dropdown */}
         {showShare && (
-          <div className="share-menu fade-in">
+          <div
+            className="position-absolute top-0 end-0 m-2 mt-5 bg-white rounded shadow-sm p-2 z-3"
+            style={{ minWidth: "120px" }}
+          >
             <button
-              onClick={() => handleShare("facebook")}
-              className="share-item facebook"
+              onClick={(e) => handleShare("facebook", e)}
+              className="btn btn-sm w-100 text-start d-flex align-items-center gap-2 mb-1 pl-1"
             >
-              <Facebook size={16} /> Facebook
+              <Facebook size={14} className="text-primary" />{" "}
+              <small>Facebook</small>
             </button>
             <button
-              onClick={() => handleShare("instagram")}
-              className="share-item instagram"
+              onClick={(e) => handleShare("instagram", e)}
+              className="btn btn-sm w-100 text-start d-flex align-items-center gap-2 mb-1 pl-1"
             >
-              <Instagram size={16} /> Instagram
+              <Instagram size={14} className="text-danger" />{" "}
+              <small>Instagram</small>
             </button>
             <button
-              onClick={() => handleShare("whatsapp")}
-              className="share-item whatsapp"
+              onClick={(e) => handleShare("whatsapp", e)}
+              className="btn btn-sm w-100 text-start d-flex align-items-center gap-2 pl-1"
             >
-              <MessageCircle size={16} /> Whatsapp
+              <MessageCircle size={14} className="text-success" />{" "}
+              <small>WhatsApp</small>
             </button>
           </div>
         )}
       </div>
 
-      <div className="product-details">
-        <div className="product-category">
+      <div className="card-body p-3 d-flex flex-column">
+        <small
+          className="text-muted text-uppercase fw-semibold mb-1"
+          style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+        >
           {t(`category.${categoryName.toLowerCase()}`, {
             defaultValue: categoryName,
           })}
-        </div>
-        <h3 className="product-title">
-          <Link to={`/products/${product.id}`}>{productName}</Link>
-        </h3>
-        <div className="product-footer">
-          <span className="product-price">{formatPrice(product.price)}</span>
-          <div className="product-actions">
-            <button
-              className="btn-buy-now"
-              title={t("product.buyNow")}
-              onClick={handleBuyNow}
-            >
-              {t("product.buyNow")}
-            </button>
-            <button
-              className="btn-add-cart"
-              title="Add to Cart"
-              onClick={handleAddToCart}
-            >
-              <ShoppingBag size={18} />
-            </button>
-          </div>
+        </small>
+
+        <h6 className="card-title text-truncate mb-2">
+          <Link
+            to={`/products/${product.id}`}
+            className="text-dark text-decoration-none hover-primary"
+          >
+            {productName}
+          </Link>
+        </h6>
+
+        <div className="mt-auto d-flex align-items-center justify-content-between">
+          <span className="fw-bold text-dark">
+            {formatPrice(product.price)}
+          </span>
+          <button
+            className="btn btn-primary btn-sm rounded-2 d-flex align-items-center justify-content-center"
+            style={{ width: "32px", height: "32px" }}
+            onClick={handleAddToCart}
+          >
+            <ShoppingBag size={16} />
+          </button>
         </div>
       </div>
-
-      <style>{`
-        .product-card {
-            background-color: var(--white);
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-4px);
-        }
-        
-        .product-card:hover .product-image-wrapper img {
-            transform: scale(1.08);
-        }
-        
-        .product-image-wrapper {
-            position: relative;
-            overflow: hidden;
-            padding-bottom: 140%; /* 5:7 aspect ratio for fashion products */
-            background-color: var(--gray-100);
-            border-radius: 0;
-        }
-        
-        .product-image-wrapper img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        .badge-new {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background-color: var(--darker);
-            color: var(--white);
-            font-size: 10px;
-            font-weight: 700;
-            padding: 5px 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            z-index: 2;
-            border-radius: 2px;
-        }
-        
-        .action-buttons {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 3;
-        }
-
-        .btn-icon {
-            background: var(--white);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--darker);
-            opacity: 0;
-            transform: translateX(10px);
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: none;
-            cursor: pointer;
-        }
-        
-        .product-card:hover .btn-icon {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        
-        .product-card:hover .btn-wishlist { transition-delay: 0s; }
-        .product-card:hover .btn-share { transition-delay: 0.05s; }
-
-        .btn-icon:hover {
-            background: var(--darker);
-            color: var(--white);
-            transform: scale(1.1);
-        }
-        
-        .btn-wishlist:hover { 
-            background: #e91e63;
-            color: var(--white);
-        }
-        
-        .btn-share:hover { 
-            background: #2196f3;
-            color: var(--white);
-        }
-        
-        .share-menu {
-            position: absolute;
-            top: 50px;
-            right: 12px;
-            background: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            padding: 8px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            width: 150px;
-            border: 1px solid var(--gray-200);
-        }
-        
-        .share-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            font-size: 13px;
-            color: var(--text-dark);
-            background: none;
-            border: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            transition: var(--transition);
-            border-radius: 4px;
-            font-weight: 500;
-        }
-        
-        .share-item:hover {
-            background-color: var(--gray-100);
-        }
-        
-        .share-item.facebook:hover { color: #1877f2; }
-        .share-item.instagram:hover { color: #c32aa3; }
-        .share-item.whatsapp:hover { color: #25d366; }
-
-        .product-details {
-            padding: 16px 0;
-        }
-        
-        .product-category {
-            display: block;
-            font-size: 11px;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        
-        .product-title {
-            font-size: 14px;
-            font-weight: 400;
-            margin: 0 0 10px;
-            line-height: 1.4;
-            /* Modern line clamp */
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: auto; 
-            min-height: 40px;
-            color: var(--darker);
-        }
-        
-        .product-title a {
-            color: var(--darker);
-            transition: var(--transition);
-        }
-        
-        .product-title a:hover {
-            color: var(--gold);
-            opacity: 1;
-        }
-        
-        .product-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 12px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .product-price {
-            font-weight: 700;
-            color: var(--darker);
-            font-size: 16px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 140px; /* Prevent it from pushing the button */
-        }
-        
-        .btn-add-cart {
-            background: var(--darker);
-            color: var(--white);
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            border-radius: 4px;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        
-        .btn-add-cart:hover {
-            background: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .product-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .btn-buy-now {
-            background: var(--darker);
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-buy-now:hover {
-            background: #000;
-            transform: translateY(-1px);
-        }
-      `}</style>
     </div>
   );
 };

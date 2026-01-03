@@ -1,9 +1,20 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
-import { User, Mail, Phone, Calendar, ArrowLeft, MapPin, Edit2, Save, X } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  ArrowLeft,
+  MapPin,
+  Edit2,
+  Save,
+  X,
+  Package,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { refreshToken } from "../api/auth";
+import { getProfile } from "../api/profile";
 
 const Profile = () => {
   const { user: contextUser } = useAuth();
@@ -17,9 +28,15 @@ const Profile = () => {
       setFormData({
         full_name: user.full_name || "",
         username: user.username || user.userName || "",
-        phone_number: user.phone_number || user.phone || user.phoneNumber || user.tel || "",
+        phone_number:
+          user.phone_number || user.phone || user.phoneNumber || user.tel || "",
         gender: user.gender || "",
-        birth_date: user.birth_date || user.birthDate || user.date_of_birth || user.dob || "",
+        birth_date:
+          user.birth_date ||
+          user.birthDate ||
+          user.date_of_birth ||
+          user.dob ||
+          "",
         address: user.address || "",
       });
     }
@@ -28,9 +45,9 @@ const Profile = () => {
   React.useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const result = await refreshToken();
-        if (result.success && result.data && result.data.user) {
-          setUser(result.data.user);
+        const result = await getProfile();
+        if (result.success && result.data) {
+          setUser(result.data);
         }
       } catch (error) {
         console.error("Failed to refresh profile:", error);
@@ -41,13 +58,13 @@ const Profile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = () => {
     // In a real app, you would call an API here to update the user
     // For now, we'll just update the local user state to reflect changes
-    setUser(prev => ({ ...prev, ...formData }));
+    setUser((prev) => ({ ...prev, ...formData }));
     setIsEditing(false);
     // Optional: Show success alert
   };
@@ -57,9 +74,15 @@ const Profile = () => {
     setFormData({
       full_name: user.full_name || "",
       username: user.username || user.userName || "",
-      phone_number: user.phone_number || user.phone || user.phoneNumber || user.tel || "",
+      phone_number:
+        user.phone_number || user.phone || user.phoneNumber || user.tel || "",
       gender: user.gender || "",
-      birth_date: user.birth_date || user.birthDate || user.date_of_birth || user.dob || "",
+      birth_date:
+        user.birth_date ||
+        user.birthDate ||
+        user.date_of_birth ||
+        user.dob ||
+        "",
       address: user.address || "",
     });
     setIsEditing(false);
@@ -67,7 +90,10 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div className="container" style={{ padding: "40px", textAlign: "center" }}>
+      <div
+        className="container"
+        style={{ padding: "40px", textAlign: "center" }}
+      >
         Loading profile...
       </div>
     );
@@ -89,7 +115,10 @@ const Profile = () => {
           <h1>{t("profile.title") || "My Profile"}</h1>
           <div className="header-actions">
             {!isEditing ? (
-              <button className="btn-edit-toggle" onClick={() => setIsEditing(true)}>
+              <button
+                className="btn-edit-toggle"
+                onClick={() => setIsEditing(true)}
+              >
                 <Edit2 size={16} /> <span>{t("common.edit") || "Edit"}</span>
               </button>
             ) : (
@@ -111,11 +140,11 @@ const Profile = () => {
               <span className="avatar-initials">
                 {user.full_name
                   ? user.full_name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .substring(0, 2)
-                    .toUpperCase()
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .substring(0, 2)
+                      .toUpperCase()
                   : "U"}
               </span>
             </div>
@@ -171,7 +200,13 @@ const Profile = () => {
                     className="edit-input"
                   />
                 ) : (
-                  <p>{user.phone_number || user.phone || user.phoneNumber || user.tel || "-"}</p>
+                  <p>
+                    {user.phone_number ||
+                      user.phone ||
+                      user.phoneNumber ||
+                      user.tel ||
+                      "-"}
+                  </p>
                 )}
               </div>
             </div>
@@ -196,11 +231,17 @@ const Profile = () => {
                   </select>
                 ) : (
                   <p>
-                    {(user.gender === "L" || user.gender === "Male" || user.gender === "male" || user.gender === "M")
+                    {user.gender === "L" ||
+                    user.gender === "Male" ||
+                    user.gender === "male" ||
+                    user.gender === "M"
                       ? t("auth.male") || "Male"
-                      : (user.gender === "P" || user.gender === "Female" || user.gender === "female" || user.gender === "F")
-                        ? t("auth.female") || "Female"
-                        : "-"}
+                      : user.gender === "P" ||
+                        user.gender === "Female" ||
+                        user.gender === "female" ||
+                        user.gender === "F"
+                      ? t("auth.female") || "Female"
+                      : "-"}
                   </p>
                 )}
               </div>
@@ -216,12 +257,25 @@ const Profile = () => {
                   <input
                     type="date"
                     name="birth_date"
-                    value={formData.birth_date ? new Date(formData.birth_date).toISOString().split('T')[0] : ""}
+                    value={
+                      formData.birth_date
+                        ? new Date(formData.birth_date)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
                     onChange={handleInputChange}
                     className="edit-input"
                   />
                 ) : (
-                  <p>{formatDate(user.birth_date || user.birthDate || user.date_of_birth || user.dob)}</p>
+                  <p>
+                    {formatDate(
+                      user.birth_date ||
+                        user.birthDate ||
+                        user.date_of_birth ||
+                        user.dob
+                    )}
+                  </p>
                 )}
               </div>
             </div>
@@ -250,7 +304,9 @@ const Profile = () => {
                     value={formData.address}
                     onChange={handleInputChange}
                     className="edit-input edit-textarea"
-                    placeholder={t("profile.enterAddress") || "Enter your address..."}
+                    placeholder={
+                      t("profile.enterAddress") || "Enter your address..."
+                    }
                   />
                 ) : (
                   <p>{user.address || "-"}</p>
@@ -259,6 +315,55 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
+        {/* Actions Grid */}
+        <div className="profile-actions-grid fade-in">
+          <Link to="/orders" className="action-card">
+            <div className="icon-wrapper bg-blue-100 text-blue-600">
+              <Package size={24} />
+            </div>
+            <div className="action-info">
+              <h3>{t("profile.myOrders") || "My Orders"}</h3>
+              <p>
+                {t("profile.viewOrders") || "View history & track packages"}
+              </p>
+            </div>
+            <div className="action-arrow">
+              <ArrowLeft size={20} style={{ transform: "rotate(180deg)" }} />
+            </div>
+          </Link>
+
+          {/* You could add more here like Addresses, Payment Methods etc */}
+        </div>
+
+        <style>{`
+            .profile-actions-grid {
+                max-width: 800px; margin: 30px auto 0;
+                display: grid; gap: 20px;
+            }
+            .action-card {
+                background: white; padding: 20px; border-radius: 12px;
+                display: flex; align-items: center; gap: 20px;
+                text-decoration: none; color: inherit;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+                transition: all 0.2s; border: 1px solid transparent;
+            }
+            .action-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                border-color: var(--gold);
+            }
+            .icon-wrapper {
+                width: 50px; height: 50px; border-radius: 10px;
+                display: flex; align-items: center; justify-content: center;
+            }
+            .action-info { flex: 1; }
+            .action-info h3 { margin: 0 0 5px 0; font-size: 16px; color: var(--darker); }
+            .action-info p { margin: 0; font-size: 13px; color: #888; }
+            
+            .bg-blue-100 { background: #e3f2fd; }
+            .text-blue-600 { color: #1e88e5; }
+        `}</style>
       </div>
 
       <style>{`
@@ -494,7 +599,7 @@ const Profile = () => {
             opacity: 0.7;
         }
       `}</style>
-    </div >
+    </div>
   );
 };
 

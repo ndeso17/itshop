@@ -4,272 +4,346 @@ import { Trash2, Plus, Minus, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
+import { checkout } from "../api/checkout";
 
 const BuyNow = () => {
-    const { t, i18n } = useTranslation();
-    const { user } = useAuth();
-    const location = useLocation();
-    const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    // Initialize from navigation state
-    const [items, setItems] = useState(() => {
-        if (location.state?.products) {
-            return location.state.products.map(p => ({
-                ...p,
-                qty: Number(p.qty) || Number(p.quantity) || 1,
-                price: Number(p.price) || 0
-            }));
-        }
-        return location.state?.product ? [{ ...location.state.product, qty: 1, price: Number(location.state.product.price) || 0 }] : [];
-    });
+  // Initialize from navigation state
+  const [items] = useState(() => {
+    if (location.state?.products) {
+      return location.state.products.map((p) => ({
+        ...p,
+        qty: Number(p.qty) || Number(p.quantity) || 1,
+        price: Number(p.price) || 0,
+      }));
+    }
+    return location.state?.product
+      ? [
+          {
+            ...location.state.product,
+            qty: 1,
+            price: Number(location.state.product.price) || 0,
+          },
+        ]
+      : [];
+  });
 
-    useEffect(() => {
-        if (!items || items.length === 0) {
-            navigate("/products");
-        }
-    }, [items, navigate]);
+  useEffect(() => {
+    if (!items || items.length === 0) {
+      navigate("/products");
+    }
+  }, [items, navigate]);
 
-    if (!items || items.length === 0) return null;
+  // Form State
+  const [formData, setFormData] = useState({
+    name: user?.full_name || "",
+    phone: user?.phone_number || user?.phone || user?.phoneNumber || "",
+    address: user?.address || "",
+  });
 
-    // Form State
-    const [formData, setFormData] = useState({
-        name: user?.full_name || "",
-        phone: user?.phone_number || user?.phone || user?.phoneNumber || "",
-        address: user?.address || ""
-    });
+  const [selectedVoucher, setSelectedVoucher] = useState("");
+  const [selectedShipping, setSelectedShipping] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState("");
 
-    const [selectedVoucher, setSelectedVoucher] = useState("");
-    const [selectedShipping, setSelectedShipping] = useState("");
-    const [selectedPayment, setSelectedPayment] = useState("");
+  if (!items || items.length === 0) return null;
 
-    // Mock Data
-    const vouchers = [
-        { id: "V01", name: "Diskon Pengguna Baru", value: 10000 },
-        { id: "V02", name: "Gratis Ongkir", value: 15000 },
-        { id: "V03", name: "Flash Sale", value: 5000 }
-    ];
+  // Mock Data
+  const vouchers = [
+    { id: "V01", name: "Diskon Pengguna Baru", value: 10000 },
+    { id: "V02", name: "Gratis Ongkir", value: 15000 },
+    { id: "V03", name: "Flash Sale", value: 5000 },
+  ];
 
-    const shippingMethods = [
-        { id: "JNE", name: "JNE Regular", price: 15000 },
-        { id: "JNT", name: "J&T Express", price: 15000 },
-        { id: "SICEPAT", name: "SiCepat Halu", price: 12000 },
-        { id: "GOSEND", name: "GoSend Instant", price: 35000 }
-    ];
+  const shippingMethods = [
+    { id: "JNE", name: "JNE Regular", price: 15000 },
+    { id: "JNT", name: "J&T Express", price: 15000 },
+    { id: "SICEPAT", name: "SiCepat Halu", price: 12000 },
+    { id: "GOSEND", name: "GoSend Instant", price: 35000 },
+  ];
 
-    const paymentMethods = [
-        { id: "COD_CHECK", name: "paymentCODCheck" },
-        { id: "COD", name: "paymentCOD" },
-        { id: "CC", name: "paymentCreditCard" },
-        { id: "TRANSFER", name: "paymentTransfer" },
-        { id: "EWALLET", name: "paymentEWallet" }
-    ];
+  const paymentMethods = [
+    { id: "COD_CHECK", name: "paymentCODCheck" },
+    { id: "COD", name: "paymentCOD" },
+    { id: "CC", name: "paymentCreditCard" },
+    { id: "TRANSFER", name: "paymentTransfer" },
+    { id: "EWALLET", name: "paymentEWallet" },
+  ];
 
-    const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    // Calculations
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  // Calculations
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-    // Dynamic Shipping Cost
-    const shippingCost = selectedShipping
-        ? shippingMethods.find(m => m.id === selectedShipping)?.price || 0
-        : 0;
+  // Dynamic Shipping Cost
+  const shippingCost = selectedShipping
+    ? shippingMethods.find((m) => m.id === selectedShipping)?.price || 0
+    : 0;
 
-    // Dynamic Discount
-    const discount = selectedVoucher
-        ? vouchers.find(v => v.id === selectedVoucher)?.value || 0
-        : 0;
+  // Dynamic Discount
+  const discount = selectedVoucher
+    ? vouchers.find((v) => v.id === selectedVoucher)?.value || 0
+    : 0;
 
-    const total = Math.max(0, subtotal + shippingCost - discount);
+  const total = Math.max(0, subtotal + shippingCost - discount);
 
-    const handleCreateOrder = () => {
-        if (!formData.name || !formData.phone || !formData.address || !selectedShipping || !selectedPayment) {
-            Swal.fire({
-                icon: "warning",
-                title: "Incomplete Data",
-                text: "Please fill in all shipping and payment details.",
-                customClass: { popup: "swal-custom-popup" }
-            });
-            return;
-        }
+  const handleCreateOrder = async () => {
+    if (
+      !formData.name ||
+      !formData.phone ||
+      !formData.address ||
+      !selectedShipping ||
+      !selectedPayment
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Incomplete Data",
+        text: "Please fill in all shipping and payment details.",
+        customClass: { popup: "swal-custom-popup" },
+      });
+      return;
+    }
 
+    try {
+      const cartItemIds = items.map((item) => item.id);
+      const payload = {
+        shipping_address: formData.address,
+        payment_method: selectedPayment,
+        cart_item_ids: cartItemIds,
+      };
+
+      const result = await checkout(payload);
+
+      if (result.success) {
         Swal.fire({
-            icon: "success",
-            title: "Order Created!",
-            text: "Thank you for your order.",
-            timer: 2000,
-            showConfirmButton: false,
-            customClass: { popup: "swal-custom-popup" }
+          icon: "success",
+          title: "Order Created!",
+          text: "Thank you for your order.",
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: { popup: "swal-custom-popup" },
         }).then(() => {
-            navigate("/profile");
+          navigate("/profile");
         });
-    };
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Checkout Failed",
+          text: result.message,
+          customClass: { popup: "swal-custom-popup" },
+        });
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An unexpected error occurred.",
+        customClass: { popup: "swal-custom-popup" },
+      });
+    }
+  };
 
-    // Format price
-    const formatPrice = (amount) => {
-        switch (i18n.language) {
-            case "id":
-                return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount * 15000);
-            case "kr": return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", minimumFractionDigits: 0 }).format(amount * 1300);
-            default: return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-        }
-    };
+  // Format price
+  const formatPrice = (amount) => {
+    switch (i18n.language) {
+      case "id":
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(amount * 15000);
+      case "kr":
+        return new Intl.NumberFormat("ko-KR", {
+          style: "currency",
+          currency: "KRW",
+          minimumFractionDigits: 0,
+        }).format(amount * 1300);
+      default:
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+    }
+  };
 
-    return (
-        <div className="cart-page container">
-            <div className="page-header-flex">
-                <h1 className="page-title">{t("cart.createOrder") || "Buat Pesanan"}</h1>
-            </div>
+  return (
+    <div className="cart-page container">
+      <div className="page-header-flex">
+        <h1 className="page-title">
+          {t("cart.createOrder") || "Buat Pesanan"}
+        </h1>
+      </div>
 
-            <div className="cart-layout">
-                {/* Left Column: Items & Address */}
-                <div className="checkout-left">
-                    {/* Items Section */}
-                    <div className="cart-items section-box">
-                        {items.map((item, index) => (
-                            <div key={index} className="cart-item">
-                                <div className="item-image">
-                                    <img src={item.image} alt={item.name} />
-                                </div>
-                                <div className="item-details">
-                                    <div className="item-header">
-                                        <span className="item-name">{item.name}</span>
-                                    </div>
-                                    <div className="item-footer">
-                                        <span className="item-qty">Qty: {item.qty}</span>
-                                        <span className="item-price">{formatPrice(item.price * item.qty)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Address Section */}
-                    <div className="address-section section-box">
-                        <h3>{t("cart.shippingAddress")}</h3>
-                        <div className="form-group">
-                            <label>{t("cart.recipientName")}</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                placeholder={t("cart.recipientName")}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>{t("cart.phoneNumber")}</label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                placeholder={t("cart.phoneNumber")}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>{t("cart.address")}</label>
-                            <textarea
-                                name="address"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                                placeholder={t("cart.address")}
-                            />
-                        </div>
-                    </div>
+      <div className="cart-layout">
+        {/* Left Column: Items & Address */}
+        <div className="checkout-left">
+          {/* Items Section */}
+          <div className="cart-items section-box">
+            {items.map((item, index) => (
+              <div key={index} className="cart-item">
+                <div className="item-image">
+                  <img src={item.image} alt={item.name} />
                 </div>
-
-                {/* Right Column: Summary & Selects */}
-                <div className="cart-summary">
-                    <h3>{t("cart.orderSummary")}</h3>
-
-                    {/* Promo & Voucher */}
-                    <div className="selector-group">
-                        <label className="selector-label">{t("cart.promoVoucher")}</label>
-                        <select
-                            className="custom-select"
-                            value={selectedVoucher}
-                            onChange={(e) => setSelectedVoucher(e.target.value)}
-                        >
-                            <option value="">{t("cart.selectVoucher") || "Select Voucher"}</option>
-                            {vouchers.map(v => (
-                                <option key={v.id} value={v.id}>{v.name} (-{formatPrice(v.value)})</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Shipping Method */}
-                    <div className="selector-group">
-                        <label className="selector-label">{t("cart.shippingMethod")}</label>
-                        <select
-                            className="custom-select"
-                            value={selectedShipping}
-                            onChange={(e) => setSelectedShipping(e.target.value)}
-                        >
-                            <option value="">{t("cart.selectShipping") || "Select Shipping"}</option>
-                            {shippingMethods.map(m => (
-                                <option key={m.id} value={m.id}>{m.name} (+{formatPrice(m.price)})</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Payment Method */}
-                    <div className="selector-group">
-                        <label className="selector-label">{t("cart.paymentMethod")}</label>
-                        <select
-                            className="custom-select"
-                            value={selectedPayment}
-                            onChange={(e) => setSelectedPayment(e.target.value)}
-                        >
-                            <option value="">{t("cart.selectPayment") || "Select Payment"}</option>
-                            {paymentMethods.map(m => (
-                                <option key={m.id} value={m.id}>{t(`cart.${m.name}`) || m.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="summary-divider"></div>
-
-                    <div className="summary-row">
-                        <span>{t("cart.subtotal")}</span>
-                        <span>{formatPrice(subtotal)}</span>
-                    </div>
-                    {/* Shipping Cost Display */}
-                    {selectedShipping && (
-                        <div className="summary-row">
-                            <span>{t("cart.shipping")}</span>
-                            <span>{formatPrice(shippingCost)}</span>
-                        </div>
-                    )}
-                    {/* Discount Display */}
-                    {selectedVoucher && (
-                        <div className="summary-row">
-                            <span>{t("cart.voucher")}</span>
-                            <span style={{ color: '#ea5b6d' }}>- {formatPrice(discount)}</span>
-                        </div>
-                    )}
-
-                    <div className="summary-divider"></div>
-                    <div className="summary-total">
-                        <span>{t("cart.total")}</span>
-                        <span>{formatPrice(total)}</span>
-                    </div>
-
-                    <button
-                        className="btn btn-primary btn-block checkout-btn"
-                        onClick={handleCreateOrder}
-                    >
-                        {t("cart.createOrder")} <ArrowRight size={18} />
-                    </button>
-
-                    <div className="secure-checkout">
-                        <span>🔒 {t("cart.secureCheckout")}</span>
-                    </div>
+                <div className="item-details">
+                  <div className="item-header">
+                    <span className="item-name">{item.name}</span>
+                  </div>
+                  <div className="item-footer">
+                    <span className="item-qty">Qty: {item.qty}</span>
+                    <span className="item-price">
+                      {formatPrice(item.price * item.qty)}
+                    </span>
+                  </div>
                 </div>
-            </div>
+              </div>
+            ))}
+          </div>
 
-            <style>{`
+          {/* Address Section */}
+          <div className="address-section section-box">
+            <h3>{t("cart.shippingAddress")}</h3>
+            <div className="form-group">
+              <label>{t("cart.recipientName")}</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder={t("cart.recipientName")}
+              />
+            </div>
+            <div className="form-group">
+              <label>{t("cart.phoneNumber")}</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder={t("cart.phoneNumber")}
+              />
+            </div>
+            <div className="form-group">
+              <label>{t("cart.address")}</label>
+              <textarea
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder={t("cart.address")}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Summary & Selects */}
+        <div className="cart-summary">
+          <h3>{t("cart.orderSummary")}</h3>
+
+          {/* Promo & Voucher */}
+          <div className="selector-group">
+            <label className="selector-label">{t("cart.promoVoucher")}</label>
+            <select
+              className="custom-select"
+              value={selectedVoucher}
+              onChange={(e) => setSelectedVoucher(e.target.value)}
+            >
+              <option value="">
+                {t("cart.selectVoucher") || "Select Voucher"}
+              </option>
+              {vouchers.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name} (-{formatPrice(v.value)})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Shipping Method */}
+          <div className="selector-group">
+            <label className="selector-label">{t("cart.shippingMethod")}</label>
+            <select
+              className="custom-select"
+              value={selectedShipping}
+              onChange={(e) => setSelectedShipping(e.target.value)}
+            >
+              <option value="">
+                {t("cart.selectShipping") || "Select Shipping"}
+              </option>
+              {shippingMethods.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name} (+{formatPrice(m.price)})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Payment Method */}
+          <div className="selector-group">
+            <label className="selector-label">{t("cart.paymentMethod")}</label>
+            <select
+              className="custom-select"
+              value={selectedPayment}
+              onChange={(e) => setSelectedPayment(e.target.value)}
+            >
+              <option value="">
+                {t("cart.selectPayment") || "Select Payment"}
+              </option>
+              {paymentMethods.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {t(`cart.${m.name}`) || m.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="summary-divider"></div>
+
+          <div className="summary-row">
+            <span>{t("cart.subtotal")}</span>
+            <span>{formatPrice(subtotal)}</span>
+          </div>
+          {/* Shipping Cost Display */}
+          {selectedShipping && (
+            <div className="summary-row">
+              <span>{t("cart.shipping")}</span>
+              <span>{formatPrice(shippingCost)}</span>
+            </div>
+          )}
+          {/* Discount Display */}
+          {selectedVoucher && (
+            <div className="summary-row">
+              <span>{t("cart.voucher")}</span>
+              <span style={{ color: "#ea5b6d" }}>
+                - {formatPrice(discount)}
+              </span>
+            </div>
+          )}
+
+          <div className="summary-divider"></div>
+          <div className="summary-total">
+            <span>{t("cart.total")}</span>
+            <span>{formatPrice(total)}</span>
+          </div>
+
+          <button
+            className="btn btn-primary btn-block checkout-btn"
+            onClick={handleCreateOrder}
+          >
+            {t("cart.createOrder")} <ArrowRight size={18} />
+          </button>
+
+          <div className="secure-checkout">
+            <span>🔒 {t("cart.secureCheckout")}</span>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
                 .cart-page { padding: 30px 20px 80px; max-width: 1200px; margin: 0 auto; }
                 .page-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0; }
                 .page-title { font-size: 28px; font-weight: 700; color: #2c2c2c; margin: 0; }
@@ -312,8 +386,8 @@ const BuyNow = () => {
                 
                 @media (max-width: 968px) { .cart-layout { grid-template-columns: 1fr; } .cart-summary { position: static; } }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default BuyNow;

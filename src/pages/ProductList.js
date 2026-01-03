@@ -1,9 +1,15 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-// import { Filter, ChevronDown, ChevronUp } from "lucide-react";
 import ProductCard from "../components/ui/ProductCard";
 import { getProducts } from "../api/products";
 import { useTranslation } from "react-i18next";
+import { Filter, X } from "lucide-react";
+import {
+  IoCheckmark,
+  IoChevronBack,
+  IoChevronForward,
+  IoSearchOutline,
+} from "react-icons/io5";
 
 const ProductList = () => {
   const { t, i18n } = useTranslation();
@@ -11,6 +17,7 @@ const ProductList = () => {
 
   // Multi-Category Logic
   const [isMultiSelect, setIsMultiSelect] = useState(false);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   const filterCategories = useMemo(() => {
     const cats = searchParams.getAll("category");
@@ -19,28 +26,16 @@ const ProductList = () => {
 
   // Helper to translate categories
   const getCategoryName = (cat) => {
-    if (!cat || typeof cat !== 'string') return "";
-    if (cat === "All") return t("common.allFashion");
-
-    // Check common manual maps first
-    const lower = cat.toLowerCase();
-    if (lower === "pria" || lower === "men" || lower === "man")
-      return t("common.men");
-    if (lower === "wanita" || lower === "women" || lower === "women")
-      return t("common.women");
-    if (lower === "anak" || lower === "kids" || lower === "child")
-      return t("common.kids");
-    if (lower === "bayi" || lower === "baby") return t("common.baby");
-    if (lower === "unisex" || cat.includes("&")) return t("common.unisex");
-
-    // Try generic category key
-    return t(`category.${lower}`, { defaultValue: cat });
+    if (!cat || typeof cat !== "string") return "";
+    if (cat === "All") return t("common.allFashion") || "All Fashion";
+    return t(`category.${cat.toLowerCase()}`, { defaultValue: cat });
   };
 
   const [sortBy, setSortBy] = useState("newest");
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
 
-  // Sync searchQuery with URL params
   useEffect(() => {
     const query = searchParams.get("search");
     setSearchQuery(query || "");
@@ -50,18 +45,16 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 50;
+  const itemsPerPage = 24; // Better number for grid (divisible by 2, 3, 4)
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         const data = await getProducts();
-        // Strictly filter invalid data
         const validData = Array.isArray(data)
-          ? data.filter(item => item && typeof item === 'object')
+          ? data.filter((item) => item && typeof item === "object")
           : [];
         setProducts(validData);
       } catch (err) {
@@ -75,13 +68,12 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  // Handle category change
   const handleCategoryChange = (category) => {
     const currentCategories = searchParams.getAll("category");
     let newCategories = [];
 
     if (category === "All") {
-      newCategories = []; // Clears all
+      newCategories = [];
     } else if (isMultiSelect) {
       if (currentCategories.includes(category)) {
         newCategories = currentCategories.filter((c) => c !== category);
@@ -95,14 +87,12 @@ const ProductList = () => {
       newCategories = [category];
     }
 
-    // Update URL params
     const newParams = new URLSearchParams(searchParams);
     newParams.delete("category");
     if (newCategories.length > 0) {
       newCategories.forEach((cat) => newParams.append("category", cat));
     }
 
-    // Preserve Search query if exists
     if (searchQuery) {
       newParams.set("search", searchQuery);
     }
@@ -111,79 +101,54 @@ const ProductList = () => {
     setCurrentPage(1);
   };
 
-  // Extract all unique categories from products' `categories` array
   const categories = useMemo(() => {
     if (!Array.isArray(products)) return ["All"];
-
     const allCats = products.flatMap((p) => {
       if (!p) return [];
-      let cats = p.categories;
-      // Handle single category case fallback
-      if (!cats && p.category) {
-        cats = [p.category];
-      }
-      if (!Array.isArray(cats)) return [];
-
-      // Extract names
-      return cats.map(c => {
-        if (typeof c === 'string') return c;
-        if (c && typeof c === 'object') {
-          return c.name || c.category_name || "";
-        }
-        return "";
-      });
+      let cats = p.categories || (p.category ? [p.category] : []);
+      return cats.map((c) =>
+        typeof c === "object" ? c.name || c.category_name || "" : c
+      );
     });
-
     const uniqueCats = [...new Set(allCats)]
-      .filter((c) => c && typeof c === 'string' && c !== "Uncategorized" && c !== "Pria & Wanita" && c.trim() !== "")
+      .filter((c) => c && typeof c === "string" && c.trim() !== "")
       .sort();
     return ["All", ...uniqueCats];
   }, [products]);
 
   const filteredProducts = useMemo(() => {
     if (!Array.isArray(products)) return [];
+    let result = products.filter((p) => p && typeof p === "object");
 
-    let result = products.filter(p => p && typeof p === 'object'); // Safe start
-
-    // Filter by Category
     if (!filterCategories.includes("All")) {
       result = result.filter((p) => {
-        let rawCats = p.categories || [];
-        if (!rawCats.length && p.category) rawCats = [p.category];
-
-        const productCatNames = rawCats.map(cat => {
-          if (typeof cat === 'string') return cat.toLowerCase();
-          return (cat?.name || cat?.category_name || "").toLowerCase();
-        });
-
-        // Check against selected filters
+        let rawCats = p.categories || (p.category ? [p.category] : []);
+        const productCatNames = rawCats.map((cat) =>
+          (typeof cat === "string"
+            ? cat
+            : cat?.name || cat?.category_name || ""
+          ).toLowerCase()
+        );
         return productCatNames.some((pc) =>
-          filterCategories.some(filter => filter && typeof filter === 'string' && filter.toLowerCase() === pc)
+          filterCategories.some(
+            (filter) => filter && filter.toLowerCase() === pc
+          )
         );
       });
     }
 
-    // Filter by Search
     if (searchQuery) {
       result = result.filter((p) => {
         const lang = i18n.language;
-        // Robust name extraction
-        let name = "";
-        if (p.name) {
-          if (typeof p.name === 'string') name = p.name;
-          else {
-            name = p.name[lang] ||
-              (lang === 'ko' ? p.name['kr'] : null) ||
-              p.name['en'] ||
-              Object.values(p.name)[0] || "";
-          }
-        }
-
+        let name = p.name
+          ? typeof p.name === "string"
+            ? p.name
+            : p.name[lang] || p.name["en"] || Object.values(p.name)[0] || ""
+          : "";
         return String(name).toLowerCase().includes(searchQuery.toLowerCase());
       });
     }
 
-    // Sort
     if (sortBy === "price-asc") {
       result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     } else if (sortBy === "price-desc") {
@@ -195,7 +160,6 @@ const ProductList = () => {
     return result;
   }, [filterCategories, sortBy, searchQuery, i18n.language, products]);
 
-  // Pagination Logic
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const currentProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -207,363 +171,241 @@ const ProductList = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  return (
-    <div className="product-list-page container">
-      {/* Page Header */}
-      <div className="page-header">
-        <div className="header-left">
-          <h1 className="page-title">
-            {filterCategories.length === 1 && filterCategories[0] === "All"
-              ? t("common.allFashion")
-              : filterCategories.map((c) => getCategoryName(c)).join(", ")}
-          </h1>
-          <span className="product-count">
-            {filteredProducts.length} {t("common.itemsFound")}
-          </span>
-        </div>
+  const FilterContent = () => (
+    <>
+      <div className="mb-4">
+        <h6
+          className="fw-bold text-uppercase mb-3 small"
+          style={{ letterSpacing: "1px" }}
+        >
+          {t("common.sortBy")}
+        </h6>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="form-select border-secondary-subtle"
+        >
+          <option value="newest">
+            {t("common.sortNewest") || "Newest Arrivals"}
+          </option>
+          <option value="price-asc">
+            {t("common.sortPriceLowHigh") || "Price: Low to High"}
+          </option>
+          <option value="price-desc">
+            {t("common.sortPriceHighLow") || "Price: High to Low"}
+          </option>
+        </select>
       </div>
 
-      <div className="shop-layout">
-        {/* Sidebar Filters */}
-        <aside className="shop-sidebar sticky-sidebar">
-          <div className="sidebar-section">
-            <h3 className="sort-label">{t("common.sortBy")}</h3>
-            <div className="custom-select-wrapper">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="modern-select"
-              >
-                <option value="newest">{t("common.sortNewest")}</option>
-                <option value="price-asc">
-                  {t("common.sortPriceLowHigh")}
-                </option>
-                <option value="price-desc">
-                  {t("common.sortPriceHighLow")}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div className="sidebar-section">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "12px",
-              }}
+      <div className="mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6
+            className="fw-bold text-uppercase mb-0 small"
+            style={{ letterSpacing: "1px" }}
+          >
+            {t("common.categories")}
+          </h6>
+          <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="multiSelectSwitch"
+              checked={isMultiSelect}
+              onChange={(e) => setIsMultiSelect(e.target.checked)}
+            />
+            <label
+              className="form-check-label small"
+              htmlFor="multiSelectSwitch"
+              style={{ fontSize: "12px" }}
             >
-              <h3 className="sidebar-title" style={{ marginBottom: 0 }}>
-                {t("common.categories")}
-              </h3>
-              <label
-                className="multi-select-toggle"
-                style={{
-                  fontSize: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  cursor: "pointer",
-                  userSelect: "none",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={isMultiSelect}
-                  onChange={(e) => setIsMultiSelect(e.target.checked)}
-                />
-                {t("common.multiSelect")}
-              </label>
-            </div>
+              Multi
+            </label>
+          </div>
+        </div>
 
-            <div className="category-tags">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  className={`category-tag ${filterCategories.includes(cat) ? "active" : ""
-                    }`}
-                  onClick={() => handleCategoryChange(cat)}
-                >
-                  {getCategoryName(cat)}
-                </button>
-              ))}
+        <div className="d-flex flex-column gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
+              className={`btn text-start btn-sm px-3 py-2 rounded-2 transition-all ${
+                filterCategories.includes(cat)
+                  ? "btn-primary text-white shadow-sm"
+                  : "btn-light text-dark bg-transparent hover-bg-light border-0"
+              }`}
+            >
+              <div className="d-flex justify-content-between align-items-center w-100">
+                <span>{getCategoryName(cat)}</span>
+                {filterCategories.includes(cat) && <IoCheckmark />}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="container py-4">
+      {/* Header & Mobile Filter Toggle */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 className="h4 fw-bold mb-1">
+            {filterCategories.length === 1 && filterCategories[0] === "All"
+              ? t("common.allFashion") || "All Products"
+              : filterCategories.map((c) => getCategoryName(c)).join(", ")}
+          </h2>
+          <p className="text-secondary small mb-0">
+            {filteredProducts.length} {t("common.itemsFound") || "Items Found"}
+          </p>
+        </div>
+
+        <button
+          className="btn btn-outline-dark d-lg-none d-flex align-items-center gap-2"
+          onClick={() => setShowMobileFilter(true)}
+        >
+          <Filter size={18} /> Filters
+        </button>
+      </div>
+
+      <div className="row">
+        {/* Desktop Sidebar */}
+        <aside className="col-lg-3 d-none d-lg-block">
+          <div className="sticky-top" style={{ top: "100px", zIndex: 10 }}>
+            <div className="card border-0 shadow-sm">
+              <div className="card-body p-4">
+                <FilterContent />
+              </div>
             </div>
           </div>
         </aside>
 
+        {/* Mobile Offcanvas Filter */}
+        <div
+          className={`offcanvas offcanvas-start ${
+            showMobileFilter ? "show" : ""
+          }`}
+          tabIndex="-1"
+          style={{ visibility: showMobileFilter ? "visible" : "hidden" }}
+        >
+          <div className="offcanvas-header border-bottom">
+            <h5 className="offcanvas-title fw-bold">Filters</h5>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setShowMobileFilter(false)}
+            ></button>
+          </div>
+          <div className="offcanvas-body">
+            <FilterContent />
+          </div>
+        </div>
+
+        {/* Backdrop for mobile */}
+        {showMobileFilter && (
+          <div
+            className="offcanvas-backdrop fade show"
+            onClick={() => setShowMobileFilter(false)}
+          ></div>
+        )}
+
         {/* Product Grid */}
-        <div className="shop-main">
+        <div className="col-lg-9">
           {loading ? (
-            <div className="loading-state">
-              <p>{t("common.loading")}</p>
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status"></div>
             </div>
           ) : error ? (
-            <div className="error-state">
-              <p>{error}</p>
+            <div className="text-center py-5">
+              <p className="text-danger mb-3">{error}</p>
               <button
-                className="btn btn-secondary"
+                className="btn btn-outline-primary"
                 onClick={() => window.location.reload()}
               >
-                {t("common.retry")}
+                Retry
               </button>
             </div>
           ) : filteredProducts.length > 0 ? (
             <>
-              <div className="product-grid">
+              <div className="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4">
                 {currentProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <div className="col" key={product.id}>
+                    <ProductCard product={product} />
+                  </div>
                 ))}
               </div>
 
-              {/* Pagination Controls */}
+              {/* Pagination */}
               {totalPages > 1 && (
-                <div className="pagination">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className="page-btn nav-btn"
-                  >
-                    &lt; {t("common.prev")}
-                  </button>
-                  {[...Array(totalPages)].map((_, i) => (
-                    <button
-                      key={i + 1}
-                      className={`page-btn ${currentPage === i + 1 ? "active" : ""
-                        }`}
-                      onClick={() => handlePageChange(i + 1)}
+                <nav className="mt-5 d-flex justify-content-center">
+                  <ul className="pagination">
+                    <li
+                      className={`page-item ${
+                        currentPage === 1 ? "disabled" : ""
+                      }`}
                     >
-                      {i + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className="page-btn nav-btn"
-                  >
-                    {t("common.next")} &gt;
-                  </button>
-                </div>
+                      <button
+                        className="page-link border-0 rounded-start-2 bg-light text-dark mx-1"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                      >
+                        <IoChevronBack />
+                      </button>
+                    </li>
+                    {[...Array(totalPages)].map((_, i) => (
+                      <li key={i + 1} className="page-item">
+                        <button
+                          className={`page-link border-0 mx-1 rounded ${
+                            currentPage === i + 1
+                              ? "bg-primary text-white"
+                              : "bg-light text-dark"
+                          }`}
+                          onClick={() => handlePageChange(i + 1)}
+                        >
+                          {i + 1}
+                        </button>
+                      </li>
+                    ))}
+                    <li
+                      className={`page-item ${
+                        currentPage === totalPages ? "disabled" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link border-0 rounded-end-2 bg-light text-dark mx-1"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      >
+                        <IoChevronForward />
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               )}
             </>
           ) : (
-            <div className="empty-state">
-              <p>{t("common.noProductsFound")}</p>
+            <div className="text-center py-5 bg-white rounded shadow-sm border">
+              <div className="mb-3">
+                <IoSearchOutline className="fs-1 text-secondary opacity-50" />
+              </div>
+              <h5 className="mb-2">No products found</h5>
+              <p className="text-secondary mb-4">
+                Try adjusting your search or filter to find what you're looking
+                for.
+              </p>
               <button
-                className="btn btn-secondary"
+                className="btn btn-primary px-4"
                 onClick={() => {
                   setSearchQuery("");
-                  searchParams.delete("category");
-                  setSearchParams(searchParams);
+                  const newParams = new URLSearchParams();
+                  setSearchParams(newParams);
                 }}
               >
-                {t("common.resetFilters")}
+                Clear All Filters
               </button>
             </div>
           )}
         </div>
       </div>
-
-      <style>{`
-        .loading-state, .error-state {
-            text-align: center;
-            padding: 60px;
-            background: #fafafa;
-            border-radius: 8px;
-        }
-        .product-list-page {
-            padding-top: 40px;
-            padding-bottom: 80px;
-            width: 100%;
-            max-width: 100%; /* Ensure full width */
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px; /* Reduced margin */
-        }
-        .page-title {
-            font-size: 24px; /* Slightly smaller for density */
-            text-transform: capitalize;
-            color: var(--darker);
-            margin-bottom: 5px;
-        }
-        .product-count {
-            color: #888;
-            font-size: 14px;
-        }
-        
-        .shop-layout {
-            display: grid;
-            grid-template-columns: 240px 1fr; /* Sidebar + Main */
-            gap: 30px;
-            align-items: start;
-        }
-
-        .sticky-sidebar {
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        
-        .sidebar-title {
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            color: var(--darker);
-        }
-        .sort-label {
-             font-size: 12px;
-             text-transform: uppercase;
-             color: #888;
-             margin-bottom: 8px;
-             font-weight: 600;
-        }
-
-        .category-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .category-tag {
-            background: #fff;
-            border: 1px solid #eee;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #555;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .category-tag:hover {
-            border-color: #ccc;
-            color: var(--dark);
-        }
-        .category-tag.active {
-            background: var(--darker);
-            color: #fff;
-            border-color: var(--darker);
-        }
-        
-        /* Modern Select */
-        .modern-select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #e1e1e1;
-            border-radius: 8px;
-            background-color: #fff;
-            font-size: 14px;
-            color: var(--darker);
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px top 50%;
-            background-size: 10px auto;
-            transition: border-color 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
-        .modern-select:focus {
-            outline: none;
-            border-color: var(--dark);
-        }
-        
-        .sidebar-section {
-            margin-bottom: 40px;
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 20px;
-        }
-        
-        /* Revert font sizes to standard */
-        .product-card .product-title {
-            font-size: 14px;
-            height: 40px;
-        }
-        .product-card .product-price {
-            font-size: 15px;
-        }
-
-        .pagination {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .page-btn {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            background: #fff;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: var(--transition);
-        }
-        .page-btn:hover:not(:disabled) {
-            background: #f5f5f5;
-            border-color: #ccc;
-        }
-        .page-btn.active {
-            background: var(--darker);
-            color: #fff;
-            border-color: var(--darker);
-        }
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px;
-            background: #fafafa;
-            border-radius: 8px;
-        }
-        
-        /* Responsive adaptations */
-        @media (max-width: 1400px) {
-            .product-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        @media (max-width: 1200px) {
-            .product-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        @media (max-width: 768px) {
-            .shop-layout {
-                display: block;
-            }
-            .shop-sidebar {
-                margin-bottom: 20px;
-                display: flex;
-                gap: 20px;
-                overflow-x: auto;
-                padding-bottom: 10px;
-            }
-            .product-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-        }
-        @media (max-width: 480px) {
-             .product-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-      `}</style>
     </div>
   );
 };

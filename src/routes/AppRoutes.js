@@ -13,6 +13,9 @@ import Cart from "../pages/Cart";
 import Wishlist from "../pages/Wishlist";
 import Profile from "../pages/Profile";
 import BuyNow from "../pages/BuyNow";
+import OrderHistory from "../pages/OrderHistory";
+import OrderDetail from "../pages/OrderDetail";
+import OrderTracking from "../pages/OrderTracking";
 import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
@@ -66,6 +69,30 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <BuyNow />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id/track"
+          element={
+            <ProtectedRoute>
+              <OrderTracking />
             </ProtectedRoute>
           }
         />

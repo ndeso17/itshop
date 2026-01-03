@@ -3,26 +3,38 @@ import { Link, useNavigate } from "react-router-dom";
 import { Trash2, Plus, Minus, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
+import { getCart } from "../api/cart";
 
 const Cart = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
-  // Initialize from localStorage
-  const [cartItems, setCartItems] = useState(() => {
-    try {
-      const stored = localStorage.getItem("cart");
-      return stored ? JSON.parse(stored) : [];
-    } catch (e) {
-      console.error("Failed to parse cart from localStorage", e);
-      return [];
-    }
-  });
+  // Initialize cartItems
+  const [cartItems, setCartItems] = useState([]);
 
-  // Sync to localStorage whenever cartItems changes
+  // Fetch cart from API
   React.useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+    const fetchCart = async () => {
+      const result = await getCart();
+      if (result.success && result.data && result.data.items) {
+        const mappedItems = result.data.items.map((item) => ({
+          id: item.cart_item_id, // Use cart_item_id as primary ID
+          product_id: item.product.id,
+          variant_id: item.variant.id,
+          name: item.product.name,
+          image: item.product.image,
+          price: item.price,
+          qty: item.qty,
+          category: item.product.category, // Assuming category name might be here or undefined
+          original_data: item,
+        }));
+        setCartItems(mappedItems);
+      }
+    };
+    fetchCart();
+  }, []);
+
+  // Removed localStorage sync to prioritize API source
 
   const updateQuantity = (id, delta) => {
     setCartItems((prev) =>
@@ -106,9 +118,9 @@ const Cart = () => {
   // But let's follow the "pilih salah satu atau pilih semua" literally.
 
   const handleSelectItem = (id) => {
-    setSelectedItems(prev => {
+    setSelectedItems((prev) => {
       if (prev.includes(id)) {
-        return prev.filter(item => item !== id);
+        return prev.filter((item) => item !== id);
       } else {
         return [...prev, id];
       }
@@ -119,7 +131,7 @@ const Cart = () => {
     if (selectedItems.length === cartItems.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(cartItems.map(item => item.id));
+      setSelectedItems(cartItems.map((item) => item.id));
     }
   };
 
@@ -132,7 +144,8 @@ const Cart = () => {
   }, 0);
 
   // Voucher Discount Logic (Mock)
-  const voucherDiscount = selectedItems.length > 0 ? 5000 * selectedItems.length : 0;
+  const voucherDiscount =
+    selectedItems.length > 0 ? 5000 * selectedItems.length : 0;
   const total = Math.max(0, subtotal - voucherDiscount);
 
   const formatPrice = (amount) => {
@@ -172,9 +185,7 @@ const Cart = () => {
   return (
     <div className="cart-page container">
       <div className="page-header-flex">
-        <h1 className="page-title">
-          {t("cart.shoppingCart")}
-        </h1>
+        <h1 className="page-title">{t("cart.shoppingCart")}</h1>
         <button
           className="btn btn-clear-all"
           onClick={clearAllCart}
@@ -188,7 +199,9 @@ const Cart = () => {
         <label className="select-all-checkbox">
           <input
             type="checkbox"
-            checked={cartItems.length > 0 && selectedItems.length === cartItems.length}
+            checked={
+              cartItems.length > 0 && selectedItems.length === cartItems.length
+            }
             onChange={handleSelectAll}
             disabled={cartItems.length === 0}
           />
@@ -203,7 +216,12 @@ const Cart = () => {
             const price = Number(item.price) || 0;
 
             return (
-              <div key={item.id} className={`cart-item ${selectedItems.includes(item.id) ? 'selected' : ''}`}>
+              <div
+                key={item.id}
+                className={`cart-item ${
+                  selectedItems.includes(item.id) ? "selected" : ""
+                }`}
+              >
                 <div className="item-checkbox">
                   <input
                     type="checkbox"
@@ -231,7 +249,9 @@ const Cart = () => {
                   </div>
                   {item.category && (
                     <div className="item-category">
-                      {t(`category.${item.category.toLowerCase()}`, { defaultValue: item.category })}
+                      {t(`category.${item.category.toLowerCase()}`, {
+                        defaultValue: item.category,
+                      })}
                     </div>
                   )}
                   <div className="item-footer">
@@ -266,7 +286,7 @@ const Cart = () => {
           </div>
           <div className="summary-row">
             <span>{t("cart.voucher")}</span>
-            <span style={{ color: '#ea5b6d' }}>
+            <span style={{ color: "#ea5b6d" }}>
               - {formatPrice(voucherDiscount)}
             </span>
           </div>
@@ -279,7 +299,9 @@ const Cart = () => {
             className="btn btn-primary btn-block checkout-btn"
             disabled={selectedItems.length === 0}
             onClick={() => {
-              const productsToCheckout = cartItems.filter(item => selectedItems.includes(item.id));
+              const productsToCheckout = cartItems.filter((item) =>
+                selectedItems.includes(item.id)
+              );
               navigate("/buy-now", { state: { products: productsToCheckout } });
             }}
           >

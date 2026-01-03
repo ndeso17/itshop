@@ -1,61 +1,41 @@
 import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ShoppingBag, Heart, Search, Menu, X, User } from "lucide-react"; // Ensure lucide-react is installed
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import {
+  IoSearchOutline,
+  IoPersonOutline,
+  IoHeartOutline,
+  IoBagOutline,
+  IoLogOutOutline,
+} from "react-icons/io5";
 
 const Navbar = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-
-    // Logic to preserve category if we are already on /products page
-    if (location.pathname === '/products') {
-      const currentParams = new URLSearchParams(location.search);
-      if (query.trim()) {
-        currentParams.set('search', query.trim());
-      } else {
-        currentParams.delete('search');
-      }
-      navigate(`/products?${currentParams.toString()}`);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
     } else {
-      // Global search from other pages
-      if (query.trim()) {
-        navigate(`/products?search=${encodeURIComponent(query)}`);
-      } else {
-        navigate('/products');
-      }
+      navigate("/products");
     }
   };
 
-  const handleChange = (e) => {
-    handleSearch(e.target.value);
-  };
-  // Remove handleKeyDown as it's no longer strictly needed for triggering search, but can keep for form submission feel if needed. 
-  // Actually since we search on change, KeyDown Enter is redundant but harmless.
-  // However, the requested behavior 'typing one letter... directly appear' means we must specificallly use onChange.
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const handleLogout = async () => {
     const result = await Swal.fire({
-      title: t("common.logout"),
+      title: t("common.logout") || "Logout?",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: t("auth.yes") || "Yes",
       cancelButtonText: t("common.cancel") || "Cancel",
-      customClass: {
-        popup: "swal-custom-popup",
-        confirmButton: "swal-confirm-btn",
-        cancelButton: "swal-cancel-btn"
-      },
-      buttonsStyling: false
+      confirmButtonColor: "var(--cta-primary)",
+      cancelButtonColor: "#6c757d",
     });
 
     if (result.isConfirmed) {
@@ -67,360 +47,146 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky-header">
-      <div className="container">
-        <div className="navbar-content">
+    <header className="fixed-top">
+      {/* Top Bar - Brand, Search, User Actions */}
+      <nav className="navbar navbar-expand-lg bg-navbar shadow-sm py-2">
+        <div className="container">
           {/* Brand */}
-          <Link to="/" className="brand-logo">
+          <Link
+            to="/"
+            className="navbar-brand fw-bold text-uppercase"
+            style={{ letterSpacing: "2px" }}
+          >
             ITShop
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="desktop-nav">
-            <Link to="/products?category=Pria">{t("common.men")}</Link>
-            <Link to="/products?category=Wanita">{t("common.women")}</Link>
-            <Link to="/products?category=Unisex">
-              {t("common.unisex")}
-            </Link>
-            <Link to="/products?category=Anak">{t("common.kids")}</Link>
-            <Link to="/products?category=Bayi">{t("common.baby")}</Link>
-          </nav>
-
-          {/* Actions */}
-          <div className="nav-actions">
-            <div className="search-bar-wrapper">
+          {/* Search Bar - Desktop & Mobile (Simplified on mobile) */}
+          <div
+            className="d-none d-md-block flex-grow-1 mx-4"
+            style={{ maxWidth: "500px" }}
+          >
+            <form onSubmit={handleSearch} className="input-group">
               <input
                 type="text"
-                placeholder={t("common.searchPlaceholder")}
-                className="nav-search-input"
+                className="form-control border-end-0 bg-white"
+                placeholder={
+                  t("common.searchPlaceholder") || "Search products..."
+                }
                 value={searchQuery}
-                onChange={handleChange}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Search
-                size={18}
-                className="search-icon"
-                onClick={() => handleSearch(searchQuery)}
-                style={{ cursor: 'pointer', pointerEvents: 'auto' }}
-              />
+              <button
+                className="btn btn-outline-secondary border-start-0 bg-white"
+                type="submit"
+              >
+                <IoSearchOutline size={20} />
+              </button>
+            </form>
+          </div>
+
+          {/* Right Actions */}
+          <div className="d-flex align-items-center gap-3">
+            <div className="d-none d-lg-block">
+              <LanguageSwitcher />
             </div>
 
-            <LanguageSwitcher />
+            {/* Mobile Search Toggle (Optional, if space is tight) */}
+            <button
+              className="btn btn-link text-dark d-md-none p-0"
+              onClick={() => navigate("/products")}
+            >
+              <IoSearchOutline size={24} />
+            </button>
 
-            {isAuthenticated ? (
-              <>
-                <Link to="/wishlist" className="action-icon">
-                  <Heart size={24} />
-                </Link>
-                <Link to="/cart" className="action-icon">
-                  <ShoppingBag size={24} />
-                </Link>
-                <div className="user-menu">
-                  <span className="user-name">
-                    {user?.full_name || user?.email || "User"}
-                  </span>
-                  <Link to="/profile" className="action-icon" title={t("common.profile") || "Profile"}>
-                    <User size={24} />
+            {/* Desktop Actions */}
+            <div className="d-none d-md-flex align-items-center gap-3">
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className="btn btn-link text-dark text-decoration-none p-0"
+                  >
+                    <IoPersonOutline size={24} />
+                    <span className="ms-1 d-none d-lg-inline">Profile</span>
+                  </Link>
+                  <Link
+                    to="/wishlist"
+                    className="btn btn-link text-dark position-relative p-0"
+                  >
+                    <IoHeartOutline size={24} />
+                  </Link>
+                  <Link
+                    to="/cart"
+                    className="btn btn-link text-dark position-relative p-0"
+                  >
+                    <IoBagOutline size={24} />
+                    <span
+                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style={{ fontSize: "0.6rem" }}
+                    >
+                      3
+                    </span>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="btn btn-logout-text"
+                    className="btn btn-link text-dark p-0"
+                    title="Logout"
                   >
-                    {t("common.logout") || "Logout"}
+                    <IoLogOutOutline size={24} />
                   </button>
-                </div>
-              </>
-            ) : (
-              <div className="auth-buttons">
-                <Link to="/login" className="btn btn-secondary btn-sm">
-                  {t("common.login")}
-                </Link>
-                <Link to="/register" className="btn btn-primary btn-sm">
-                  {t("common.register")}
-                </Link>
-              </div>
-            )}
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="btn btn-outline-primary btn-sm rounded-pill px-4"
+                  >
+                    {t("auth.login") || "Login"}
+                  </Link>
+                  <Link
+                    to="/cart"
+                    className="btn btn-link text-dark position-relative p-0"
+                  >
+                    <IoBagOutline size={24} />
+                  </Link>
+                </>
+              )}
+            </div>
 
-            {/* Mobile Toggle */}
-            <button
-              className="mobile-menu-toggle"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            {/* Mobile Cart Icon (Always Visible) */}
+            <Link
+              to="/cart"
+              className="d-md-none btn btn-link text-dark position-relative p-0"
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              <IoBagOutline size={24} />
+              <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                <span className="visually-hidden">New alerts</span>
+              </span>
+            </Link>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu">
-          <nav>
-            <Link
-              to="/products?category=Pria"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t("common.men")}
-            </Link>
-            <Link
-              to="/products?category=Wanita"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t("common.women")}
-            </Link>
-            <Link
-              to="/products?category=Pria & Wanita"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t("common.unisex")}
-            </Link>
-            <Link
-              to="/products?category=Anak"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t("common.kids")}
-            </Link>
-            <Link
-              to="/products?category=Bayi"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t("common.baby")}
-            </Link>
-          </nav>
+      {/* Secondary Nav - Categories (Desktop Only) */}
+      <div className="bg-white border-bottom d-none d-md-block">
+        <div className="container">
+          <ul className="nav justify-content-center py-2">
+            {["Wanita", "Pria", "Anak", "Bayi", "Unisex", "Beauty"].map(
+              (cat) => (
+                <li className="nav-item" key={cat}>
+                  <Link
+                    to={`/products?category=${cat}`}
+                    className="nav-link text-secondary text-uppercase fw-semibold"
+                    style={{ fontSize: "0.85rem", letterSpacing: "1px" }}
+                  >
+                    {cat}
+                  </Link>
+                </li>
+              )
+            )}
+          </ul>
         </div>
-      )}
-
-      <style>{`
-        .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            padding: 0;
-        }
-        
-        .navbar-content {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            height: 64px;
-        }
-        
-        .brand-logo {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--darker);
-            transition: var(--transition);
-            margin-right: 32px;
-        }
-        
-        .brand-logo:hover {
-            color: var(--gold);
-            opacity: 1;
-        }
-        
-        .desktop-nav {
-            display: none;
-            gap: 24px;
-            align-items: center;
-        }
-        
-        .desktop-nav a {
-            font-weight: 500;
-            font-size: 14px;
-            color: var(--text-dark);
-            position: relative;
-            transition: var(--transition);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        
-        .desktop-nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--darker);
-            transition: width 0.3s ease;
-        }
-        
-        .desktop-nav a:hover {
-            color: var(--darker);
-            opacity: 1;
-        }
-        
-        .desktop-nav a:hover::after {
-            width: 100%;
-        }
-        
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-left: auto;
-        }
-        
-        .search-bar-wrapper {
-            display: none;
-            position: relative;
-        }
-        
-        .nav-search-input {
-            width: 280px;
-            padding: 10px 40px 10px 16px;
-            border: 1px solid var(--gray-300);
-            border-radius: 4px;
-            background: var(--gray-50);
-            outline: none;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-        
-        .nav-search-input:focus {
-            background: var(--white);
-            border-color: var(--darker);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-        }
-        
-        .nav-search-input::placeholder {
-            color: var(--gray-500);
-        }
-        
-        .search-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-600);
-            pointer-events: none;
-        }
-        
-        .action-icon {
-            color: var(--darker);
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
-        }
-        
-        .action-icon:hover {
-            color: var(--gold);
-            opacity: 1;
-        }
-        
-        .btn-sm {
-            padding: 8px 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        
-        .auth-buttons {
-            display: none;
-            gap: 12px;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .user-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--darker);
-            display: none;
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .btn-logout-text {
-            background: none;
-            border: 1px solid var(--gray-300);
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--darker);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .btn-logout-text:hover {
-            background: var(--gray-50);
-            border-color: var(--darker);
-        }
-        
-        .mobile-menu-toggle {
-            background: none;
-            display: block;
-            color: var(--darker);
-            padding: 8px;
-        }
-        
-        .mobile-menu {
-            border-top: 1px solid var(--gray-200);
-            padding: 24px 0;
-            background: var(--white);
-        }
-        
-        .mobile-menu nav {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-        
-        .mobile-menu nav a {
-            padding: 14px 0;
-            font-weight: 500;
-            font-size: 15px;
-            color: var(--text-dark);
-            border-bottom: 1px solid var(--gray-100);
-            transition: var(--transition);
-        }
-        
-        .mobile-menu nav a:hover {
-            color: var(--darker);
-            padding-left: 8px;
-        }
-        
-        @media (min-width: 768px) {
-            .desktop-nav {
-                display: flex;
-            }
-            
-            .auth-buttons {
-                display: flex;
-            }
-            
-            .user-name {
-                display: block;
-            }
-            
-            .mobile-menu-toggle {
-                display: none;
-            }
-            
-            .search-bar-wrapper {
-                display: block;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .navbar-content {
-                height: 72px;
-            }
-            
-            .nav-search-input {
-                width: 320px;
-            }
-        }
-      `}</style>
+      </div>
     </header>
   );
 };

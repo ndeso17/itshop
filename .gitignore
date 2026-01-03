@@ -25,5 +25,7 @@ dist-ssr
 .vscode
 
 .agent
-.github
+.github/
 reqres.txt
+reqresproduct.txt
+responseApiProduct.json

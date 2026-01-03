@@ -1,179 +1,135 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  Facebook,
-  Instagram,
-  Twitter,
-  Mail,
-  MapPin,
-  Phone,
-} from "lucide-react";
-import { useTranslation } from "react-i18next";
+  IoLogoTwitter,
+  IoLogoInstagram,
+  IoLogoFacebook,
+} from "react-icons/io5";
 
 const Footer = () => {
-  const { t } = useTranslation();
-
   return (
-    <footer className="footer">
+    <footer className="bg-navbar pt-5 pb-3 border-top mt-auto d-none d-md-block">
       <div className="container">
-        <div className="footer-content">
-          <div className="footer-section brand-section">
-            <h3 className="footer-brand">ITShop</h3>
-            <p className="brand-desc">{t("footer.brandDesc")}</p>
-            <div className="social-links">
-              <a href="#" className="social-icon">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="social-icon">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="social-icon">
-                <Twitter size={20} />
-              </a>
+        <div className="row g-4">
+          <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
+            <h5
+              className="text-uppercase mb-4 fw-bold"
+              style={{ letterSpacing: "2px" }}
+            >
+              ITShop
+            </h5>
+            <p className="text-secondary">
+              Premium fashion destination for modern lifestyle. Discover the
+              latest trends and collections curated just for you.
+            </p>
+          </div>
+
+          <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+            <h6 className="text-uppercase mb-4 fw-bold font-monospace">Shop</h6>
+            <ul className="list-unstyled mb-0">
+              <li className="mb-2">
+                <Link
+                  to="/products?category=Wanita"
+                  className="text-secondary text-decoration-none hover-primary"
+                >
+                  Women
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link
+                  to="/products?category=Pria"
+                  className="text-secondary text-decoration-none hover-primary"
+                >
+                  Men
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link
+                  to="/products?category=Anak"
+                  className="text-secondary text-decoration-none hover-primary"
+                >
+                  Kids
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+            <h6 className="text-uppercase mb-4 fw-bold font-monospace">
+              Company
+            </h6>
+            <ul className="list-unstyled mb-0">
+              <li className="mb-2">
+                <Link
+                  to="/about"
+                  className="text-secondary text-decoration-none hover-primary"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link
+                  to="/contact"
+                  className="text-secondary text-decoration-none hover-primary"
+                >
+                  Contact
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link
+                  to="/careers"
+                  className="text-secondary text-decoration-none hover-primary"
+                >
+                  Careers
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
+            <h6 className="text-uppercase mb-4 fw-bold font-monospace">
+              Newsletter
+            </h6>
+            <p className="text-secondary mb-4">
+              Subscribe to receive updates, access to exclusive deals, and more.
+            </p>
+            <div className="input-group mb-3">
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Enter your email"
+                aria-label="Recipient's email"
+              />
+              <button className="btn btn-primary" type="button">
+                Subscribe
+              </button>
             </div>
           </div>
-
-          <div className="footer-section">
-            <h4 className="footer-title">{t("footer.shop")}</h4>
-            <ul className="footer-links">
-              <li>
-                <Link to="/products?category=Women">{t("common.women")}</Link>
-              </li>
-              <li>
-                <Link to="/products?category=Men">{t("common.men")}</Link>
-              </li>
-              <li>
-                <Link to="/products?category=Kids">{t("common.kids")}</Link>
-              </li>
-              <li>
-                <Link to="/products?category=Sports">{t("common.sports")}</Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h4 className="footer-title">{t("footer.help")}</h4>
-            <ul className="footer-links">
-              <li>
-                <a href="#">{t("footer.customerService")}</a>
-              </li>
-              <li>
-                <a href="#">{t("footer.shippingInfo")}</a>
-              </li>
-              <li>
-                <a href="#">{t("footer.returns")}</a>
-              </li>
-              <li>
-                <a href="#">{t("footer.faq")}</a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h4 className="footer-title">{t("footer.contact")}</h4>
-            <ul className="footer-contact">
-              <li>
-                <MapPin size={18} />
-                <span>123 Fashion St, Jakarta, Indonesia</span>
-              </li>
-              <li>
-                <Phone size={18} />
-                <span>+62 812 3456 7890</span>
-              </li>
-              <li>
-                <Mail size={18} />
-                <span>support@itshop.com</span>
-              </li>
-            </ul>
-          </div>
         </div>
 
-        <div className="footer-bottom">
-          <p>
-            &copy; {new Date().getFullYear()} ITShop. {t("footer.copyright")}
+        <div className="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
+          <p className="text-secondary small mb-0">
+            &copy; {new Date().getFullYear()} ITShop. All rights reserved.
           </p>
+          <ul className="list-unstyled d-flex mb-0">
+            <li className="ms-3">
+              <a className="link-secondary" href="#">
+                <IoLogoTwitter size={20} />
+              </a>
+            </li>
+            <li className="ms-3">
+              <a className="link-secondary" href="#">
+                <IoLogoInstagram size={20} />
+              </a>
+            </li>
+            <li className="ms-3">
+              <a className="link-secondary" href="#">
+                <IoLogoFacebook size={20} />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-
-      <style>{`
-        .footer {
-            background-color: #222;
-            color: #fff;
-            padding: 60px 0 20px;
-            margin-top: auto;
-        }
-        .footer-content {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        .footer-brand {
-            font-size: 24px;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .brand-desc {
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-        .social-links {
-            display: flex;
-            gap: 15px;
-        }
-        .social-icon {
-            color: #fff;
-            transition: color 0.2s;
-        }
-        .social-icon:hover {
-            color: var(--gold);
-        }
-        
-        .footer-title {
-            font-size: 16px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .footer-links li {
-            margin-bottom: 12px;
-        }
-        .footer-links a {
-            color: #aaa;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
-        .footer-links a:hover {
-            color: #fff;
-        }
-        
-        .footer-contact li {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 15px;
-            color: #aaa;
-            font-size: 14px;
-        }
-        
-        .footer-bottom {
-            border-top: 1px solid #333;
-            padding-top: 20px;
-            text-align: center;
-            color: #777;
-            font-size: 13px;
-        }
-        
-        @media (max-width: 768px) {
-            .footer-content {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-        }
-      `}</style>
     </footer>
   );
 };
