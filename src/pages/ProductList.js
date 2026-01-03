@@ -80,9 +80,7 @@ const ProductList = () => {
             : c?.name || c?.category_name || ""
           ).toLowerCase()
         );
-        return filterCategories.some((f) =>
-          names.includes(f.toLowerCase())
-        );
+        return filterCategories.some((f) => names.includes(f.toLowerCase()));
       });
     }
 
@@ -156,9 +154,13 @@ const ProductList = () => {
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option value="newest">Newest</option>
-          <option value="price-asc">Price ↑</option>
-          <option value="price-desc">Price ↓</option>
+          <option value="newest">{t("common.sortNewest") || "Newest"}</option>
+          <option value="price-asc">
+            {t("common.sortPriceLowHigh") || "Price ↓ (Low to High)"}
+          </option>
+          <option value="price-desc">
+            {t("common.sortPriceHighLow") || "Price ↑ (High to Low)"}
+          </option>
         </select>
       </div>
 
@@ -178,9 +180,7 @@ const ProductList = () => {
             key={cat}
             onClick={() => handleCategoryChange(cat)}
             className={`btn btn-sm w-100 text-start mb-2 ${
-              filterCategories.includes(cat)
-                ? "btn-primary"
-                : "btn-light"
+              filterCategories.includes(cat) ? "btn-primary" : "btn-light"
             }`}
           >
             <div className="d-flex justify-content-between">
@@ -204,9 +204,7 @@ const ProductList = () => {
               ? t("common.allFashion")
               : filterCategories.map(getCategoryName).join(", ")}
           </h4>
-          <small className="text-muted">
-            {filteredProducts.length} items
-          </small>
+          <small className="text-muted">{filteredProducts.length} items</small>
         </div>
 
         <button
@@ -266,7 +264,9 @@ const ProductList = () => {
               {totalPages > 1 && (
                 <nav className="mt-4 d-flex justify-content-center">
                   <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 && "disabled"}`}>
+                    <li
+                      className={`page-item ${currentPage === 1 && "disabled"}`}
+                    >
                       <button
                         className="page-link"
                         onClick={() => changePage(currentPage - 1)}
