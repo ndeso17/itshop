@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import OTPModal from "../components/auth/OTPModal";
 import Swal from "sweetalert2";
+import LanguageSwitcher from "../components/ui/LanguageSwitcher";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -69,7 +70,10 @@ const Login = () => {
 
   return (
     <>
-      <div className="auth-page">
+      <div className="auth-page position-relative">
+        <div className="position-absolute top-0 end-0 m-3">
+          <LanguageSwitcher />
+        </div>
         <div className="auth-card fade-in">
           <div className="auth-header">
             <Link to="/" className="auth-logo">

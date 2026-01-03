@@ -2,7 +2,18 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
-import { User, Mail, Lock, Phone, Calendar, Eye, EyeOff } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Phone,
+  Calendar,
+  Eye,
+  EyeOff,
+  Check,
+  X,
+} from "lucide-react";
+import LanguageSwitcher from "../components/ui/LanguageSwitcher";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -118,7 +129,10 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page position-relative">
+      <div className="position-absolute top-0 end-0 m-3">
+        <LanguageSwitcher />
+      </div>
       <div className="auth-card auth-card-register fade-in">
         <div className="auth-header">
           <Link to="/" className="auth-logo">
@@ -139,7 +153,7 @@ const Register = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="johndoe"
+                placeholder={t("auth.placeholderUsername") || "johndoe"}
                 required
                 disabled={loading}
               />
@@ -159,7 +173,7 @@ const Register = () => {
                 name="full_name"
                 value={formData.full_name}
                 onChange={handleChange}
-                placeholder="John Doe"
+                placeholder={t("auth.placeholderFullName") || "John Doe"}
                 required
                 disabled={loading}
               />
@@ -176,7 +190,7 @@ const Register = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="name@example.com"
+                placeholder={t("auth.placeholderEmail") || "name@example.com"}
                 required
                 disabled={loading}
               />
@@ -194,7 +208,7 @@ const Register = () => {
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
-                placeholder="081234567890"
+                placeholder={t("auth.placeholderPhone") || "081234567890"}
                 required
                 disabled={loading}
               />
@@ -207,29 +221,28 @@ const Register = () => {
           {/* Gender */}
           <div className="form-group">
             <label>{t("auth.gender") || "Gender"}</label>
-            <div className="radio-group">
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="L"
-                  checked={formData.gender === "L"}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                <span>{t("auth.male") || "Male"}</span>
-              </label>
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="P"
-                  checked={formData.gender === "P"}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                <span>{t("auth.female") || "Female"}</span>
-              </label>
+            <div className="input-icon-wrapper">
+              <User size={18} className="input-icon" />
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                disabled={loading}
+                className="form-control gender-select"
+                style={{
+                  width: "100%",
+                  padding: "12px 12px 12px 40px",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  fontSize: "15px",
+                  backgroundColor: "white",
+                  appearance: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="L">{t("auth.male") || "Male"}</option>
+                <option value="P">{t("auth.female") || "Female"}</option>
+              </select>
             </div>
           </div>
 
@@ -269,7 +282,7 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Password"
+                placeholder={t("auth.placeholderPassword") || "Password"}
                 required
                 disabled={loading}
               />
@@ -284,10 +297,81 @@ const Register = () => {
             {errors.password && (
               <span className="error-text">{errors.password}</span>
             )}
-            <small className="password-hint">
-              Min 8 characters with uppercase, lowercase, number & special
-              character
-            </small>
+            <div className="password-requirements mt-2">
+              <small className="d-block mb-1 font-weight-bold text-muted">
+                {t("auth.passwordRequirements") || "Password Requirements:"}
+              </small>
+              <ul className="list-unstyled mb-0 small">
+                <li
+                  className={`d-flex align-items-center ${
+                    formData.password.length >= 8
+                      ? "text-success"
+                      : "text-muted"
+                  }`}
+                >
+                  {formData.password.length >= 8 ? (
+                    <Check size={14} className="mr-2" />
+                  ) : (
+                    <div style={{ width: 14, marginRight: 8 }}>•</div>
+                  )}
+                  {t("auth.reqLength") || "At least 8 characters"}
+                </li>
+                <li
+                  className={`d-flex align-items-center ${
+                    /[A-Z]/.test(formData.password)
+                      ? "text-success"
+                      : "text-muted"
+                  }`}
+                >
+                  {/[A-Z]/.test(formData.password) ? (
+                    <Check size={14} className="mr-2" />
+                  ) : (
+                    <div style={{ width: 14, marginRight: 8 }}>•</div>
+                  )}
+                  {t("auth.reqUppercase") || "At least one uppercase letter"}
+                </li>
+                <li
+                  className={`d-flex align-items-center ${
+                    /[a-z]/.test(formData.password)
+                      ? "text-success"
+                      : "text-muted"
+                  }`}
+                >
+                  {/[a-z]/.test(formData.password) ? (
+                    <Check size={14} className="mr-2" />
+                  ) : (
+                    <div style={{ width: 14, marginRight: 8 }}>•</div>
+                  )}
+                  {t("auth.reqLowercase") || "At least one lowercase letter"}
+                </li>
+                <li
+                  className={`d-flex align-items-center ${
+                    /\d/.test(formData.password) ? "text-success" : "text-muted"
+                  }`}
+                >
+                  {/\d/.test(formData.password) ? (
+                    <Check size={14} className="mr-2" />
+                  ) : (
+                    <div style={{ width: 14, marginRight: 8 }}>•</div>
+                  )}
+                  {t("auth.reqNumber") || "At least one number"}
+                </li>
+                <li
+                  className={`d-flex align-items-center ${
+                    /[@$!%*?&]/.test(formData.password)
+                      ? "text-success"
+                      : "text-muted"
+                  }`}
+                >
+                  {/[@$!%*?&]/.test(formData.password) ? (
+                    <Check size={14} className="mr-2" />
+                  ) : (
+                    <div style={{ width: 14, marginRight: 8 }}>•</div>
+                  )}
+                  {t("auth.reqSpecial") || "At least one special character"}
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Confirm Password */}
@@ -300,7 +384,9 @@ const Register = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm Password"
+                placeholder={
+                  t("auth.placeholderConfirmPassword") || "Confirm Password"
+                }
                 required
                 disabled={loading}
               />
@@ -314,6 +400,27 @@ const Register = () => {
             </div>
             {errors.confirmPassword && (
               <span className="error-text">{errors.confirmPassword}</span>
+            )}
+            {formData.confirmPassword && (
+              <div
+                className={`d-flex align-items-center mt-2 small ${
+                  formData.password === formData.confirmPassword
+                    ? "text-success"
+                    : "text-danger"
+                }`}
+              >
+                {formData.password === formData.confirmPassword ? (
+                  <>
+                    <Check size={14} className="mr-2" />
+                    {t("auth.passwordMatch") || "Passwords match"}
+                  </>
+                ) : (
+                  <>
+                    <X size={14} className="mr-2" />
+                    {t("auth.passwordMismatch") || "Passwords do not match"}
+                  </>
+                )}
+              </div>
             )}
           </div>
 
@@ -416,33 +523,47 @@ const Register = () => {
             background: #f5f5f5;
             cursor: not-allowed;
         }
-        .radio-group {
-            display: flex;
-            gap: 20px;
-        }
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 15px;
-        }
-        .radio-label input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
+
         .error-text {
             display: block;
             color: #dc3545;
             font-size: 12px;
             margin-top: 5px;
         }
-        .password-hint {
+        .password-requirements {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        .password-requirements ul li {
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+        }
+        .text-success {
+            color: #28a745 !important;
+        }
+        .text-danger {
+            color: #dc3545 !important;
+        }
+        .text-muted {
+            color: #6c757d !important;
+        }
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        .d-block {
             display: block;
-            color: #888;
-            font-size: 12px;
-            margin-top: 5px;
+        }
+        .font-weight-bold {
+            font-weight: 600;
         }
         .btn-block {
             width: 100%;
