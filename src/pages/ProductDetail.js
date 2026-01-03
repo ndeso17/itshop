@@ -13,13 +13,13 @@ import {
   Star,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { getProductBySlug } from "../api/catalog";
+import { formatCurrency } from "../utils/currency";
+import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
+import { getProductBySlug } from "../api/products";
 import { addToCart as apiAddToCart } from "../api/cart";
 import { addToWishlist } from "../utils/cart";
-import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
-import Navbar from "../components/layout/Navbar"; // Ensure we have nav if not using layout wrapper? app routes handles it.
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -38,34 +38,6 @@ const ProductDetail = () => {
 
   // Reviews State
   const [reviews] = useState([]);
-
-  // Format Price
-  const formatPrice = (price) => {
-    try {
-      switch (i18n.language) {
-        case "id":
-          return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-          }).format(price * 15000);
-        case "kr":
-        case "ko":
-          return new Intl.NumberFormat("ko-KR", {
-            style: "currency",
-            currency: "KRW",
-            minimumFractionDigits: 0,
-          }).format(price * 1300);
-        default:
-          return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(price);
-      }
-    } catch {
-      return price;
-    }
-  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -230,7 +202,11 @@ const ProductDetail = () => {
               </button>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              {product.name}
+              {product.slug &&
+              t(`product_names.${product.slug}`) !==
+                `product_names.${product.slug}`
+                ? t(`product_names.${product.slug}`)
+                : product.name}
             </li>
           </ol>
         </nav>
@@ -312,13 +288,20 @@ const ProductDetail = () => {
             <div className="sticky-top" style={{ top: "100px" }}>
               <div className="mb-2">
                 <span className="text-uppercase text-secondary fw-bold small tracking-wider">
-                  {product.category}
+                  {t(`category.${product.category.toLowerCase()}`) ||
+                    product.category}
                 </span>
               </div>
-              <h1 className="h2 fw-bold mb-3">{product.name}</h1>
+              <h1 className="h2 fw-bold mb-3">
+                {product.slug &&
+                t(`product_names.${product.slug}`) !==
+                  `product_names.${product.slug}`
+                  ? t(`product_names.${product.slug}`)
+                  : product.name}
+              </h1>
               <div className="d-flex align-items-center mb-4">
                 <span className="h3 fw-bold text-primary-custom mb-0">
-                  {formatPrice(product.price)}
+                  {formatCurrency(product.price, i18n.language)}
                 </span>
               </div>
 
@@ -490,7 +473,7 @@ const ProductDetail = () => {
           className="btn btn-primary flex-grow-1 fw-bold"
           onClick={handleAddToCart}
         >
-          Add to Cart - {formatPrice(product.price)}
+          Add to Cart - {formatCurrency(product.price, i18n.language)}
         </button>
       </div>
 

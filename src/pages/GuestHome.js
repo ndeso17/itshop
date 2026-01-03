@@ -9,9 +9,23 @@ import {
   IoRefreshOutline,
   IoCarSportOutline,
 } from "react-icons/io5";
+import {
+  FaFemale,
+  FaMale,
+  FaChild,
+  FaSpa,
+  FaRunning,
+  FaGem,
+} from "react-icons/fa";
+
+import { formatCurrency } from "../utils/currency";
 
 const GuestHome = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Base threshold in IDR (1,600,000 IDR approx $100 USD based on 16,000 rate)
+  const shippingThreshold = formatCurrency(1600000, i18n.language);
+
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,12 +44,36 @@ const GuestHome = () => {
   }, []);
 
   const categories = [
-    { name: "Wanita", color: "#F2D0C7" }, // Rose
-    { name: "Pria", color: "#8FA3A0" }, // Muted Teal
-    { name: "Anak", color: "#EFE6E2" }, // Warm Surface
-    { name: "Beauty", color: "#F2D0C7" },
-    { name: "Sports", color: "#8FA3A0" },
-    { name: "Luxury", color: "#EFE6E2" },
+    {
+      name: "Wanita",
+      color: "#F2D0C7",
+      icon: <FaFemale size={32} />,
+    },
+    {
+      name: "Pria",
+      color: "#8FA3A0",
+      icon: <FaMale size={32} />,
+    },
+    {
+      name: "Anak",
+      color: "#EFE6E2",
+      icon: <FaChild size={32} />,
+    },
+    {
+      name: "Beauty",
+      color: "#F2D0C7",
+      icon: <FaSpa size={32} />,
+    },
+    {
+      name: "Sports",
+      color: "#8FA3A0",
+      icon: <FaRunning size={32} />,
+    },
+    {
+      name: "Luxury",
+      color: "#EFE6E2",
+      icon: <FaGem size={32} />,
+    },
   ];
 
   return (
@@ -58,17 +96,14 @@ const GuestHome = () => {
             ></button>
           </div>
           <div className="carousel-inner">
-            <div
-              className="carousel-item active"
-              style={{ height: "clamp(320px, 50vh, 600px)" }}
-            >
+            <div className="carousel-item active hero-slide">
               {/* Fallback pattern or image */}
               <img
                 src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=2000"
-                className="d-block w-100 h-100 object-fit-cover"
+                className="d-block w-100 h-100 hero-image"
                 alt="Fashion Header"
-                style={{ filter: "brightness(0.9)" }}
               />
+
               <div className="carousel-caption d-flex h-100 align-items-start align-items-md-center justify-content-center top-0 bottom-0">
                 <div
                   className="text-center bg-white bg-opacity-90 p-4 p-lg-5 rounded-3 shadow-lg mt-3 mt-md-0"
@@ -78,16 +113,17 @@ const GuestHome = () => {
                     className="display-4 fw-bold text-dark text-uppercase mb-3"
                     style={{ letterSpacing: "2px" }}
                   >
-                    Fashion Starts Here
+                    {t("home.heroTitle") || "Fashion Starts Here"}
                   </h1>
                   <p className="lead text-secondary mb-4 d-none d-md-block">
-                    Discover your personal style with our latest collection.
+                    {t("home.heroSubtitle") ||
+                      "Discover your personal style with our latest collection."}
                   </p>
                   <Link
                     to="/products"
                     className="btn btn-primary btn-lg rounded-0 px-5 text-uppercase fw-bold ls-1"
                   >
-                    Shop Now
+                    {t("home.shopNow") || "Shop Now"}
                   </Link>
                 </div>
               </div>
@@ -99,7 +135,9 @@ const GuestHome = () => {
       {/* Categories - Horizontal Scroll Mobile, Grid Desktop */}
       <section className="container mb-5">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="h4 fw-bold text-uppercase mb-0">Shop by Category</h2>
+          <h2 className="h4 fw-bold text-uppercase mb-0">
+            {t("home.shopByCategory") || "Shop by Category"}
+          </h2>
         </div>
 
         <div
@@ -138,12 +176,10 @@ const GuestHome = () => {
                     }}
                   >
                     {/* Icon or Initials could go here if no image */}
-                    <span className="fw-bold text-dark fs-4 opacity-50">
-                      {cat.name[0]}
-                    </span>
+                    <div className="text-dark opacity-75">{cat.icon}</div>
                   </div>
                   <h6 className="small fw-bold text-uppercase text-dark">
-                    {cat.name}
+                    {t(`category.${cat.name.toLowerCase()}`) || cat.name}
                   </h6>
                 </div>
               </Link>
@@ -169,14 +205,16 @@ const GuestHome = () => {
               ></div>
               <div className="card-body position-relative d-flex flex-column justify-content-center p-4">
                 <span className="badge bg-white text-dark w-auto align-self-start mb-2">
-                  New Season
+                  {t("home.newSeason") || "New Season"}
                 </span>
-                <h3 className="fw-bold mb-3">Summer Collection</h3>
+                <h3 className="fw-bold mb-3">
+                  {t("home.summerCollection") || "Summer Collection"}
+                </h3>
                 <Link
                   to="/products?category=Wanita"
                   className="btn btn-light align-self-start"
                 >
-                  Explore
+                  {t("home.explore") || "Explore"}
                 </Link>
               </div>
             </div>
@@ -195,11 +233,13 @@ const GuestHome = () => {
               ></div>
               <div className="card-body position-relative d-flex flex-column justify-content-center p-4">
                 <span className="badge bg-white text-dark w-auto align-self-start mb-2">
-                  Limited Offer
+                  {t("home.limitedOffer") || "Limited Offer"}
                 </span>
-                <h3 className="fw-bold mb-3">Up to 50% Off</h3>
+                <h3 className="fw-bold mb-3">
+                  {t("home.saleTitle") || "Up to 50% Off"}
+                </h3>
                 <Link to="/products" className="btn btn-light align-self-start">
-                  Shop Sale
+                  {t("home.shopSale") || "Shop Sale"}
                 </Link>
               </div>
             </div>
@@ -217,7 +257,7 @@ const GuestHome = () => {
             to="/products"
             className="text-secondary text-decoration-none d-flex align-items-center gap-1 group"
           >
-            View All <ArrowRight size={16} />
+            {t("common.viewAll") || "View All"} <ArrowRight size={16} />
           </Link>
         </div>
 
@@ -252,28 +292,36 @@ const GuestHome = () => {
               <div className="mb-3">
                 <IoShieldCheckmarkOutline className="fs-1 text-primary-custom" />
               </div>
-              <h5 className="fw-bold text-uppercase">100% Original</h5>
+              <h5 className="fw-bold text-uppercase">
+                {t("home.original") || "100% Original"}
+              </h5>
               <p className="text-secondary small">
-                Experience the real quality with our authentic products
-                guarantee.
+                {t("home.originalDesc") ||
+                  "Experience the real quality with our authentic products guarantee."}
               </p>
             </div>
             <div className="col-md-4">
               <div className="mb-3">
                 <IoRefreshOutline className="fs-1 text-primary-custom" />
               </div>
-              <h5 className="fw-bold text-uppercase">30 Days Return</h5>
+              <h5 className="fw-bold text-uppercase">
+                {t("home.return") || "30 Days Return"}
+              </h5>
               <p className="text-secondary small">
-                Not satisfied? Return it within 30 days, no questions asked.
+                {t("home.returnDesc") ||
+                  "Not satisfied? Return it within 30 days, no questions asked."}
               </p>
             </div>
             <div className="col-md-4">
               <div className="mb-3">
                 <IoCarSportOutline className="fs-1 text-primary-custom" />
               </div>
-              <h5 className="fw-bold text-uppercase">Free Shipping</h5>
+              <h5 className="fw-bold text-uppercase">
+                {t("home.shipping") || "Free Shipping"}
+              </h5>
               <p className="text-secondary small">
-                Enjoy free shipping on all orders above $100.
+                {t("home.shippingDesc", { amount: shippingThreshold }) ||
+                  `Enjoy free shipping on all orders above ${shippingThreshold}.`}
               </p>
             </div>
           </div>

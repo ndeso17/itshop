@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { getCart } from "../api/cart";
 
+import { formatCurrency } from "../utils/currency";
+
 const Cart = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -148,28 +150,6 @@ const Cart = () => {
     selectedItems.length > 0 ? 5000 * selectedItems.length : 0;
   const total = Math.max(0, subtotal - voucherDiscount);
 
-  const formatPrice = (amount) => {
-    switch (i18n.language) {
-      case "id":
-        return new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 0,
-        }).format(amount * 15000);
-      case "kr":
-        return new Intl.NumberFormat("ko-KR", {
-          style: "currency",
-          currency: "KRW",
-          minimumFractionDigits: 0,
-        }).format(amount * 1300);
-      default:
-        return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-    }
-  };
-
   if (cartItems.length === 0) {
     return (
       <div className="cart-page container empty-cart">
@@ -265,7 +245,7 @@ const Cart = () => {
                       </button>
                     </div>
                     <span className="item-price">
-                      {formatPrice(price * qty)}
+                      {formatCurrency(price * qty, i18n.language)}
                     </span>
                   </div>
                 </div>
@@ -278,22 +258,22 @@ const Cart = () => {
           <h3>{t("cart.orderSummary")}</h3>
           <div className="summary-row">
             <span>{t("cart.subtotal")}</span>
-            <span>{formatPrice(subtotal)}</span>
+            <span>{formatCurrency(subtotal, i18n.language)}</span>
           </div>
           <div className="summary-row">
             <span>{t("cart.subtotal")}</span>
-            <span>{formatPrice(subtotal)}</span>
+            <span>{formatCurrency(subtotal, i18n.language)}</span>
           </div>
           <div className="summary-row">
             <span>{t("cart.voucher")}</span>
             <span style={{ color: "#ea5b6d" }}>
-              - {formatPrice(voucherDiscount)}
+              - {formatCurrency(voucherDiscount, i18n.language)}
             </span>
           </div>
           <div className="summary-divider"></div>
           <div className="summary-total">
             <span>{t("cart.total")}</span>
-            <span>{formatPrice(total)}</span>
+            <span>{formatCurrency(total, i18n.language)}</span>
           </div>
           <button
             className="btn btn-primary btn-block checkout-btn"

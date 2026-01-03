@@ -3,9 +3,13 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 
 import { ArrowLeft, Package, MapPin, CreditCard, Truck } from "lucide-react";
 import { getCheckoutDetail } from "../api/checkout";
+import { useTranslation } from "react-i18next";
+
+import { formatCurrency } from "../utils/currency";
 
 const OrderDetail = () => {
   const { id } = useParams();
+  const { i18n } = useTranslation();
 
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
@@ -30,14 +34,6 @@ const OrderDetail = () => {
 
     if (id) fetchDetail();
   }, [id]);
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price || 0);
-  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
@@ -110,14 +106,15 @@ const OrderDetail = () => {
                   <div className="item-info">
                     <h4>{item.name}</h4>
                     <p>
-                      Qty: {item.qty} x {formatPrice(item.price)}
+                      Qty: {item.qty} x{" "}
+                      {formatCurrency(item.price, i18n.language)}
                     </p>
                     {item.variant && (
                       <span className="variant-tag">{item.variant}</span>
                     )}
                   </div>
                   <div className="item-total">
-                    {formatPrice(item.price * item.qty)}
+                    {formatCurrency(item.price * item.qty, i18n.language)}
                   </div>
                 </div>
               ))}
@@ -148,20 +145,23 @@ const OrderDetail = () => {
             <div className="summary-row">
               <span>Subtotal</span>
               <span>
-                {formatPrice(
+                {formatCurrency(
                   order.subtotal ||
-                    order.total_amount - (order.shipping_cost || 0)
+                    order.total_amount - (order.shipping_cost || 0),
+                  i18n.language
                 )}
               </span>
             </div>
             <div className="summary-row">
               <span>Shipping</span>
-              <span>{formatPrice(order.shipping_cost || 0)}</span>
+              <span>
+                {formatCurrency(order.shipping_cost || 0, i18n.language)}
+              </span>
             </div>
             <div className="summary-divider"></div>
             <div className="summary-row total">
               <span>Total</span>
-              <span>{formatPrice(order.total_amount)}</span>
+              <span>{formatCurrency(order.total_amount, i18n.language)}</span>
             </div>
           </div>
         </div>

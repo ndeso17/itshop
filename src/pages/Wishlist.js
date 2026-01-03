@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
-import { products } from "../data/products";
+
 import { addToCart as apiAddToCart } from "../api/cart";
 import { useAuth } from "../context/AuthContext";
+
+import { formatCurrency } from "../utils/currency";
 
 const Wishlist = () => {
   const { t, i18n } = useTranslation();
@@ -141,38 +143,6 @@ const Wishlist = () => {
     }
   };
 
-  const formatPrice = (price) => {
-    if (!price) return "";
-
-    // Check for 'id' directly
-    if (i18n.language === "id") {
-      return new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      }).format(price * 15000);
-    }
-
-    // Check for 'kr' or 'ko' or 'ko-KR'
-    if (
-      i18n.language === "kr" ||
-      i18n.language === "ko" ||
-      i18n.language === "ko-KR"
-    ) {
-      return new Intl.NumberFormat("ko-KR", {
-        style: "currency",
-        currency: "KRW",
-        minimumFractionDigits: 0,
-      }).format(price * 1300);
-    }
-
-    // Default to USD
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price);
-  };
-
   if (wishlistItems.length === 0) {
     return (
       <div className="wishlist-page container empty-wishlist">
@@ -202,16 +172,14 @@ const Wishlist = () => {
       <div className="wishlist-grid">
         {wishlistItems.map((item) => {
           // Find full product details to support dynamic translation
-          // Ensure both IDs are compared as strings or numbers
-          const productDetails =
-            products.find((p) => String(p.id) === String(item.id)) || item;
+          // Fallback to item itself since products data file is removed
+          const productDetails = item;
 
           // Name Translation
           let displayName = productDetails.name;
           if (typeof productDetails.name === "object") {
             displayName =
               productDetails.name[i18n.language] ||
-              (i18n.language === "kr" ? productDetails.name["ko"] : null) ||
               (i18n.language === "ko" ? productDetails.name["kr"] : null) ||
               productDetails.name["en"];
           }
@@ -238,7 +206,7 @@ const Wishlist = () => {
                   {displayName}
                 </Link>
                 <span className="item-price">
-                  {formatPrice(productDetails.price)}
+                  {formatCurrency(productDetails.price, i18n.language)}
                 </span>
 
                 <div className="item-actions">

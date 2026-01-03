@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   IoLogoTwitter,
@@ -7,6 +8,7 @@ import {
 } from "react-icons/io5";
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <footer className="bg-navbar pt-5 pb-3 border-top mt-auto d-none d-md-block">
       <div className="container">
@@ -19,36 +21,38 @@ const Footer = () => {
               ITShop
             </h5>
             <p className="text-secondary">
-              Premium fashion destination for modern lifestyle. Discover the
-              latest trends and collections curated just for you.
+              {t("footer.aboutText") ||
+                "Premium fashion destination for modern lifestyle. Discover the latest trends and collections curated just for you."}
             </p>
           </div>
 
           <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
-            <h6 className="text-uppercase mb-4 fw-bold font-monospace">Shop</h6>
+            <h6 className="text-uppercase mb-4 fw-bold font-monospace">
+              {t("footer.shop") || "Shop"}
+            </h6>
             <ul className="list-unstyled mb-0">
               <li className="mb-2">
                 <Link
-                  to="/products?category=Wanita"
+                  to="/products?category=women"
                   className="text-secondary text-decoration-none hover-primary"
                 >
-                  Women
+                  {t("category.women") || "Women"}
                 </Link>
               </li>
               <li className="mb-2">
                 <Link
-                  to="/products?category=Pria"
+                  to="/products?category=men"
                   className="text-secondary text-decoration-none hover-primary"
                 >
-                  Men
+                  {t("category.men") || "Men"}
                 </Link>
               </li>
               <li className="mb-2">
                 <Link
-                  to="/products?category=Anak"
+                  to="/products?category=kids"
                   className="text-secondary text-decoration-none hover-primary"
                 >
-                  Kids
+                  {t("category.kids") || "Kids"}
                 </Link>
               </li>
             </ul>
@@ -56,7 +60,7 @@ const Footer = () => {
 
           <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
             <h6 className="text-uppercase mb-4 fw-bold font-monospace">
-              Company
+              {t("footer.company") || "Company"}
             </h6>
             <ul className="list-unstyled mb-0">
               <li className="mb-2">
@@ -64,7 +68,7 @@ const Footer = () => {
                   to="/about"
                   className="text-secondary text-decoration-none hover-primary"
                 >
-                  About Us
+                  {t("footer.aboutUs") || "About Us"}
                 </Link>
               </li>
               <li className="mb-2">
@@ -72,7 +76,7 @@ const Footer = () => {
                   to="/contact"
                   className="text-secondary text-decoration-none hover-primary"
                 >
-                  Contact
+                  {t("footer.contact") || "Contact"}
                 </Link>
               </li>
               <li className="mb-2">
@@ -80,7 +84,7 @@ const Footer = () => {
                   to="/careers"
                   className="text-secondary text-decoration-none hover-primary"
                 >
-                  Careers
+                  {t("footer.careers") || "Careers"}
                 </Link>
               </li>
             </ul>
@@ -88,20 +92,21 @@ const Footer = () => {
 
           <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
             <h6 className="text-uppercase mb-4 fw-bold font-monospace">
-              Newsletter
+              {t("footer.newsletter") || "Newsletter"}
             </h6>
             <p className="text-secondary mb-4">
-              Subscribe to receive updates, access to exclusive deals, and more.
+              {t("footer.newsletterText") ||
+                "Subscribe to receive updates, access to exclusive deals, and more."}
             </p>
             <div className="input-group mb-3">
               <input
                 type="email"
                 className="form-control"
-                placeholder="Enter your email"
+                placeholder={t("footer.emailPlaceholder") || "Enter your email"}
                 aria-label="Recipient's email"
               />
               <button className="btn btn-primary" type="button">
-                Subscribe
+                {t("footer.subscribe") || "Subscribe"}
               </button>
             </div>
           </div>
@@ -109,7 +114,8 @@ const Footer = () => {
 
         <div className="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
           <p className="text-secondary small mb-0">
-            &copy; {new Date().getFullYear()} ITShop. All rights reserved.
+            &copy; {new Date().getFullYear()} ITShop.{" "}
+            {t("footer.rightsReserved") || "All rights reserved."}
           </p>
           <ul className="list-unstyled d-flex mb-0">
             <li className="ms-3">

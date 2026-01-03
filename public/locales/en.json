@@ -45,20 +45,43 @@
         "next": "Next",
         "cancel": "Cancel"
     },
-    "footer": {
-        "brandDesc": "Your premium fashion destination for the latest trends and styles.",
+    "nav": {
+        "home": "Home",
         "shop": "Shop",
-        "help": "Help",
-        "customerService": "Customer Service",
-        "shippingInfo": "Shipping Info",
-        "returns": "Returns",
-        "faq": "FAQ",
-        "contact": "Contact Us",
         "about": "About",
-        "copyright": "All rights reserved.",
-        "ourStory": "Our Story",
+        "contact": "Contact",
+        "profile": "Profile"
+    },
+    "footer": {
+        "aboutText": "Premium fashion destination for modern lifestyle. Discover the latest trends and collections curated just for you.",
+        "shop": "Shop",
+        "company": "Company",
+        "aboutUs": "About Us",
+        "contact": "Contact",
         "careers": "Careers",
-        "press": "Press"
+        "newsletter": "Newsletter",
+        "newsletterText": "Subscribe to receive updates, access to exclusive deals, and more.",
+        "emailPlaceholder": "Enter your email",
+        "subscribe": "Subscribe",
+        "rightsReserved": "All rights reserved."
+    },
+    "home": {
+        "heroTitle": "Fashion Starts Here",
+        "heroSubtitle": "Discover your personal style with our latest collection.",
+        "shopNow": "Shop Now",
+        "shopByCategory": "Shop by Category",
+        "newSeason": "New Season",
+        "summerCollection": "Summer Collection",
+        "explore": "Explore",
+        "limitedOffer": "Limited Offer",
+        "saleTitle": "Up to 50% Off",
+        "shopSale": "Shop Sale",
+        "original": "100% Original",
+        "originalDesc": "Experience the real quality with our authentic products guarantee.",
+        "return": "30 Days Return",
+        "returnDesc": "Not satisfied? Return it within 30 days, no questions asked.",
+        "shipping": "Free Shipping",
+        "shippingDesc": "Enjoy free shipping on all orders above {{amount}}."
     },
     "auth": {
         "loginTitle": "Welcome Back",
@@ -194,7 +217,20 @@
         "aksesoris": "Accessories",
         "sepatu": "Shoes",
         "men": "Men",
-        "women": "Women"
+        "women": "Women",
+        "beauty": "Beauty",
+        "sports": "Sports",
+        "luxury": "Luxury",
+        "kids": "Kids",
+        "baby": "Baby"
+    },
+    "product_names": {
+        "urban-sneaker": "Urban Sneaker",
+        "featured-sneaker-1": "Featured Sneaker",
+        "classic-jacket": "Classic Jacket",
+        "running-shoes": "Running Shoes",
+        "smart-watch-series-5": "Smart Watch Series 5",
+        "wireless-earbuds-pro": "Wireless Earbuds Pro"
     },
     "product_content": {
         "urban-sneaker": "Comfortable everyday sneaker with breathable upper and cushioned sole.",

@@ -107,7 +107,9 @@ const Navbar = () => {
                     className="btn btn-link text-dark text-decoration-none p-0"
                   >
                     <IoPersonOutline size={24} />
-                    <span className="ms-1 d-none d-lg-inline">Profile</span>
+                    <span className="ms-1 d-none d-lg-inline">
+                      {t("nav.profile") || "Profile"}
+                    </span>
                   </Link>
                   <Link
                     to="/wishlist"
@@ -130,7 +132,7 @@ const Navbar = () => {
                   <button
                     onClick={handleLogout}
                     className="btn btn-link text-dark p-0"
-                    title="Logout"
+                    title={t("common.logout") || "Logout"}
                   >
                     <IoLogOutOutline size={24} />
                   </button>
@@ -141,7 +143,7 @@ const Navbar = () => {
                     to="/login"
                     className="btn btn-outline-primary btn-sm rounded-pill px-4"
                   >
-                    {t("auth.login") || "Login"}
+                    {t("common.login") || "Login"}
                   </Link>
                   <Link
                     to="/cart"
@@ -171,19 +173,17 @@ const Navbar = () => {
       <div className="bg-white border-bottom d-none d-md-block">
         <div className="container">
           <ul className="nav justify-content-center py-2">
-            {["Wanita", "Pria", "Anak", "Bayi", "Unisex", "Beauty"].map(
-              (cat) => (
-                <li className="nav-item" key={cat}>
-                  <Link
-                    to={`/products?category=${cat}`}
-                    className="nav-link text-secondary text-uppercase fw-semibold"
-                    style={{ fontSize: "0.85rem", letterSpacing: "1px" }}
-                  >
-                    {cat}
-                  </Link>
-                </li>
-              )
-            )}
+            {["women", "men", "kids", "baby", "unisex", "beauty"].map((cat) => (
+              <li className="nav-item" key={cat}>
+                <Link
+                  to={`/products?category=${cat}`}
+                  className="nav-link text-secondary text-uppercase fw-semibold"
+                  style={{ fontSize: "0.85rem", letterSpacing: "1px" }}
+                >
+                  {t(`category.${cat}`) || cat}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

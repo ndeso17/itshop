@@ -8,6 +8,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <React.Suspense fallback={<div>Loading translations...</div>}>
+      <App />
+    </React.Suspense>
   </React.StrictMode>
 );

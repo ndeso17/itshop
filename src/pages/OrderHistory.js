@@ -11,8 +11,10 @@ import {
 import { getCheckoutHistory } from "../api/checkout";
 import { useAuth } from "../context/AuthContext";
 
+import { formatCurrency } from "../utils/currency";
+
 const OrderHistory = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -61,14 +63,6 @@ const OrderHistory = () => {
       default:
         return "bg-gray-100 text-gray-800";
     }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price || 0);
   };
 
   const formatDate = (dateString) => {
@@ -142,7 +136,7 @@ const OrderHistory = () => {
                 <div className="order-summary">
                   <span>Total Amount:</span>
                   <span className="amount">
-                    {formatPrice(order.total_amount)}
+                    {formatCurrency(order.total_amount, i18n.language)}
                   </span>
                 </div>
                 <div className="order-items-preview">

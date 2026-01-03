@@ -45,20 +45,43 @@
         "next": "다음",
         "cancel": "취소"
     },
-    "footer": {
-        "brandDesc": "최신 트렌드와 스타일을 위한 프리미엄 패션 목적지.",
+    "nav": {
+        "home": "홈",
         "shop": "쇼핑",
-        "help": "도움말",
-        "customerService": "고객 서비스",
-        "shippingInfo": "배송 정보",
-        "returns": "반품",
-        "faq": "FAQ",
-        "contact": "문의하기",
         "about": "정보",
-        "copyright": "모든 권리 보유.",
-        "ourStory": "우리의 이야기",
+        "contact": "문의",
+        "profile": "프로필"
+    },
+    "footer": {
+        "aboutText": "현대적인 라이프스타일을 위한 프리미엄 패션 목적지. 당신을 위해 엄선된 최신 트렌드와 컬렉션을 만나보세요.",
+        "shop": "쇼핑",
+        "company": "회사",
+        "aboutUs": "회사 소개",
+        "contact": "문의",
         "careers": "채용",
-        "press": "보도"
+        "newsletter": "뉴스레터",
+        "newsletterText": "업데이트, 독점 혜택 등을 받으려면 구독하세요.",
+        "emailPlaceholder": "이메일 입력",
+        "subscribe": "구독",
+        "rightsReserved": "모든 권리 보유."
+    },
+    "home": {
+        "heroTitle": "패션은 여기에서 시작됩니다",
+        "heroSubtitle": "최신 컬렉션으로 당신만의 스타일을 찾아보세요.",
+        "shopNow": "지금 쇼핑하기",
+        "shopByCategory": "카테고리별 쇼핑",
+        "newSeason": "새로운 시즌",
+        "summerCollection": "여름 컬렉션",
+        "explore": "탐색",
+        "limitedOffer": "제한된 제안",
+        "saleTitle": "최대 50% 할인",
+        "shopSale": "할인 쇼핑",
+        "original": "100% 정품",
+        "originalDesc": "정품 보장으로 진정한 품질을 경험하세요.",
+        "return": "30일 반품",
+        "returnDesc": "만족하지 않으십니까? 30일 이내에 반품하세요, 묻지 않습니다.",
+        "shipping": "무료 배송",
+        "shippingDesc": "{{amount}} 이상 주문 시 무료 배송을 즐기세요."
     },
     "auth": {
         "loginTitle": "환영합니다",
@@ -173,7 +196,20 @@
         "aksesoris": "액세서리",
         "sepatu": "신발",
         "men": "남성",
-        "women": "여성"
+        "women": "여성",
+        "beauty": "뷰티",
+        "sports": "스포츠",
+        "luxury": "럭셔리",
+        "kids": "키즈",
+        "baby": "베이비"
+    },
+    "product_names": {
+        "urban-sneaker": "어반 스니커즈",
+        "featured-sneaker-1": "추천 스니커즈",
+        "classic-jacket": "클래식 재킷",
+        "running-shoes": "러닝화",
+        "smart-watch-series-5": "스마트 워치 시리즈 5",
+        "wireless-earbuds-pro": "무선 이어버드 프로"
     },
     "product_content": {
         "urban-sneaker": "통기성이 뛰어난 갑피와 쿠션 처리된 밑창이 있는 편안한 일상용 스니커즈.",

@@ -15,13 +15,13 @@ const LanguageSwitcher = () => {
   const flags = {
     en: "🇺🇸",
     id: "🇮🇩",
-    kr: "🇰🇷", // Keeping internal key as 'kr' to match existing config
+    ko: "🇰🇷",
   };
 
   const labels = {
     en: "English",
     id: "Indonesia",
-    kr: "한국어",
+    ko: "한국어",
   };
 
   // Close dropdown when clicking outside

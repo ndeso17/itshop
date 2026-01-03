@@ -7,6 +7,8 @@ import { setAuthTokenGetter } from "./api/axios";
 import AppRoutes from "./routes/AppRoutes";
 import "./App.css";
 
+import { updateExchangeRates } from "./utils/currency";
+
 // Inner component to access AuthContext
 const AppContent = () => {
   const { getAccessToken } = useAuth();
@@ -14,6 +16,9 @@ const AppContent = () => {
   useEffect(() => {
     // Connect axios with AuthContext token getter
     setAuthTokenGetter(getAccessToken);
+
+    // Initial fetch of exchange rates
+    updateExchangeRates();
   }, [getAccessToken]);
 
   return <AppRoutes />;

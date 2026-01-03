@@ -45,20 +45,43 @@
         "next": "Lan",
         "cancel": "Batal"
     },
-    "footer": {
-        "brandDesc": "Destinasi fashion premium Anda untuk tren dan gaya terbaru.",
+    "nav": {
+        "home": "Beranda",
         "shop": "Belanja",
-        "help": "Bantuan",
-        "customerService": "Layanan Pelanggan",
-        "shippingInfo": "Info Pengiriman",
-        "returns": "Pengembalian",
-        "faq": "FAQ",
-        "contact": "Hubungi Kami",
         "about": "Tentang",
-        "copyright": "Hak cipta dilindungi undang-undang.",
-        "ourStory": "Cerita Kami",
+        "contact": "Kontak",
+        "profile": "Profil"
+    },
+    "footer": {
+        "aboutText": "Destinasi mode premium untuk gaya hidup modern. Temukan tren dan koleksi terbaru yang dikurasi khusus untuk Anda.",
+        "shop": "Belanja",
+        "company": "Perusahaan",
+        "aboutUs": "Tentang Kami",
+        "contact": "Kontak",
         "careers": "Karir",
-        "press": "Pers"
+        "newsletter": "Buletin",
+        "newsletterText": "Berlangganan untuk menerima pembaruan, akses ke penawaran eksklusif, dan banyak lagi.",
+        "emailPlaceholder": "Masukkan email Anda",
+        "subscribe": "Berlangganan",
+        "rightsReserved": "Hak cipta dilindungi undang-undang."
+    },
+    "home": {
+        "heroTitle": "Mode Dimulai Di Sini",
+        "heroSubtitle": "Temukan gaya pribadi Anda dengan koleksi terbaru kami.",
+        "shopNow": "Belanja Sekarang",
+        "shopByCategory": "Belanja Berdasarkan Kategori",
+        "newSeason": "Musim Baru",
+        "summerCollection": "Koleksi Musim Panas",
+        "explore": "Jelajahi",
+        "limitedOffer": "Penawaran Terbatas",
+        "saleTitle": "Diskon hingga 50%",
+        "shopSale": "Belanja Obral",
+        "original": "100% Asli",
+        "originalDesc": "Rasakan kualitas nyata dengan jaminan produk otentik kami.",
+        "return": "Pengembalian 30 Hari",
+        "returnDesc": "Tidak puas? Kembalikan dalam 30 hari, tanpa pertanyaan.",
+        "shipping": "Gratis Ongkos Kirim",
+        "shippingDesc": "Nikmati gratis ongkos kirim untuk semua pesanan di atas {{amount}}."
     },
     "auth": {
         "loginTitle": "Selamat Datang Kembali",
@@ -175,7 +198,20 @@
         "aksesoris": "Aksesoris",
         "sepatu": "Sepatu",
         "men": "Pria",
-        "women": "Wanita"
+        "women": "Wanita",
+        "beauty": "Kecantikan",
+        "sports": "Olahraga",
+        "luxury": "Mewah",
+        "kids": "Anak",
+        "baby": "Bayi"
+    },
+    "product_names": {
+        "urban-sneaker": "Sneaker Perkotaan",
+        "featured-sneaker-1": "Sneaker Unggulan",
+        "classic-jacket": "Jaket Klasik",
+        "running-shoes": "Sepatu Lari",
+        "smart-watch-series-5": "Smart Watch Seri 5",
+        "wireless-earbuds-pro": "Earbud Nirkabel Pro"
     },
     "product_content": {
         "urban-sneaker": "Sneaker sehari-hari yang nyaman dengan bagian atas yang bernapas dan sol empuk.",

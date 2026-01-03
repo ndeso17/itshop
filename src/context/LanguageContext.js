@@ -1,54 +1,33 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { translations } from "../data/translations";
+import React, { createContext, useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(() => {
-    // Persist language choice
-    const saved = localStorage.getItem("appLanguage");
-    return saved || "en";
-  });
+  const { t, i18n } = useTranslation();
 
-  useEffect(() => {
-    localStorage.setItem("appLanguage", language);
-  }, [language]);
-
-  // Helper function to get nested translation value
-  const t = (key) => {
-    const keys = key.split(".");
-    let value = translations[language];
-
-    for (const k of keys) {
-      if (value && value[k]) {
-        value = value[k];
-      } else {
-        // Fallback to English if missing
-        let fallback = translations["en"];
-        for (const fk of keys) {
-          if (fallback && fallback[fk]) {
-            fallback = fallback[fk];
-          } else {
-            return key; // Return key if not found
-          }
-        }
-        return fallback;
-      }
-    }
-    return value;
+  // Sync local state with i18n if needed, or just expose i18n's language
+  // For compatibility with existing consumers, we can provide a setLanguage wrapper
+  const setLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("appLanguage", lang);
   };
+
+  const language = i18n.language;
 
   // Price formatting and conversion
   const formatPrice = (priceInUSD) => {
     switch (language) {
       case "id":
+      case "id-ID":
         // Approx 1 USD = 15,000 IDR
         return new Intl.NumberFormat("id-ID", {
           style: "currency",
           currency: "IDR",
           minimumFractionDigits: 0,
         }).format(priceInUSD * 15000);
-      case "kr":
+      case "ko":
+      case "ko-KR":
         // Approx 1 USD = 1,300 KRW
         return new Intl.NumberFormat("ko-KR", {
           style: "currency",

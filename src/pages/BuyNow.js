@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
 import { checkout } from "../api/checkout";
 
+import { formatCurrency } from "../utils/currency";
+
 const BuyNow = () => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
@@ -149,29 +151,6 @@ const BuyNow = () => {
     }
   };
 
-  // Format price
-  const formatPrice = (amount) => {
-    switch (i18n.language) {
-      case "id":
-        return new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 0,
-        }).format(amount * 15000);
-      case "kr":
-        return new Intl.NumberFormat("ko-KR", {
-          style: "currency",
-          currency: "KRW",
-          minimumFractionDigits: 0,
-        }).format(amount * 1300);
-      default:
-        return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-    }
-  };
-
   return (
     <div className="cart-page container">
       <div className="page-header-flex">
@@ -197,7 +176,7 @@ const BuyNow = () => {
                   <div className="item-footer">
                     <span className="item-qty">Qty: {item.qty}</span>
                     <span className="item-price">
-                      {formatPrice(item.price * item.qty)}
+                      {formatCurrency(item.price * item.qty, i18n.language)}
                     </span>
                   </div>
                 </div>
@@ -257,7 +236,7 @@ const BuyNow = () => {
               </option>
               {vouchers.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.name} (-{formatPrice(v.value)})
+                  {v.name} (-{formatCurrency(v.value, i18n.language)})
                 </option>
               ))}
             </select>
@@ -276,7 +255,7 @@ const BuyNow = () => {
               </option>
               {shippingMethods.map((m) => (
                 <option key={m.id} value={m.id}>
-                  {m.name} (+{formatPrice(m.price)})
+                  {m.name} (+{formatCurrency(m.price, i18n.language)})
                 </option>
               ))}
             </select>
@@ -305,13 +284,13 @@ const BuyNow = () => {
 
           <div className="summary-row">
             <span>{t("cart.subtotal")}</span>
-            <span>{formatPrice(subtotal)}</span>
+            <span>{formatCurrency(subtotal, i18n.language)}</span>
           </div>
           {/* Shipping Cost Display */}
           {selectedShipping && (
             <div className="summary-row">
               <span>{t("cart.shipping")}</span>
-              <span>{formatPrice(shippingCost)}</span>
+              <span>{formatCurrency(shippingCost, i18n.language)}</span>
             </div>
           )}
           {/* Discount Display */}
@@ -319,7 +298,7 @@ const BuyNow = () => {
             <div className="summary-row">
               <span>{t("cart.voucher")}</span>
               <span style={{ color: "#ea5b6d" }}>
-                - {formatPrice(discount)}
+                - {formatCurrency(discount, i18n.language)}
               </span>
             </div>
           )}
@@ -327,7 +306,7 @@ const BuyNow = () => {
           <div className="summary-divider"></div>
           <div className="summary-total">
             <span>{t("cart.total")}</span>
-            <span>{formatPrice(total)}</span>
+            <span>{formatCurrency(total, i18n.language)}</span>
           </div>
 
           <button
