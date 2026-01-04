@@ -6,6 +6,7 @@ const OTPModal = ({ isOpen, email, device_id, onVerify, onCancel }) => {
   const { t } = useTranslation();
 
   const [otp, setOtp] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const inputRef = useRef(null);
@@ -18,6 +19,7 @@ const OTPModal = ({ isOpen, email, device_id, onVerify, onCancel }) => {
     // for resetting form state when a modal opens rather than when it closes
     // eslint-disable-next-line
     setOtp("");
+    setRememberMe(false);
     setTimeLeft(300);
     setLoading(false);
 
@@ -53,7 +55,7 @@ const OTPModal = ({ isOpen, email, device_id, onVerify, onCancel }) => {
     }
 
     setLoading(true);
-    await onVerify(email, device_id, otp);
+    await onVerify(email, device_id, otp, rememberMe);
     setLoading(false);
   };
 
@@ -110,6 +112,20 @@ const OTPModal = ({ isOpen, email, device_id, onVerify, onCancel }) => {
                     "Code expired. Please request a new one."}
                 </span>
               )}
+            </div>
+
+            <div className="otp-remember-me mb-3">
+              <label className="d-flex align-items-center justify-content-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="me-2"
+                />
+                <span className="text-secondary small">
+                  {t("auth.rememberMe") || "Remember Me on this device"}
+                </span>
+              </label>
             </div>
 
             <button

@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("userData");
     localStorage.removeItem("hasAuth");
+    localStorage.removeItem("deviceId");
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
       refreshIntervalRef.current = null;
@@ -51,20 +52,36 @@ export const AuthProvider = ({ children }) => {
       clearInterval(refreshIntervalRef.current);
     }
 
+    console.log("[Auth] Starting auto-refresh interval (every 9 minutes)");
+
     // Set new interval
     refreshIntervalRef.current = setInterval(async () => {
       console.log("[Auth] Auto-refreshing token...");
       const result = await authAPI.refreshToken();
 
       if (result.success && result.data) {
+        setAccessToken(result.data.token);
         setUser(result.data.user);
         localStorage.setItem("accessToken", result.data.token);
         localStorage.setItem("userData", JSON.stringify(result.data.user));
         localStorage.setItem("hasAuth", "true");
         console.log("[Auth] Token refreshed successfully");
       } else {
-        console.error("[Auth] Auto-refresh failed, logging out");
-        performLogout();
+        console.error(
+          "[Auth] Auto-refresh failed:",
+          result.status,
+          result.message
+        );
+        // Only logout on explicit auth failures (401/403)
+        // For network errors or server errors, keep trying
+        if (result.status === 401 || result.status === 403) {
+          console.error("[Auth] Session expired, logging out");
+          performLogout();
+        } else {
+          console.warn(
+            "[Auth] Refresh failed but keeping session (will retry next interval)"
+          );
+        }
       }
     }, 540000); // 9 minutes
   }, [performLogout]);
@@ -174,17 +191,22 @@ export const AuthProvider = ({ children }) => {
    * @param {string} email
    * @param {string} device_id
    * @param {string} otp
+   * @param {boolean} rememberMe
    * @returns {Promise<{success: boolean}>}
    */
-  const verifyOTP = async (email, device_id, otp) => {
-    const result = await authAPI.verifyOTP(email, device_id, otp);
+  const verifyOTP = async (email, device_id, otp, rememberMe) => {
+    const result = await authAPI.verifyOTP(email, device_id, otp, rememberMe);
 
     if (result.success) {
       setAccessToken(result.data.token);
       setUser(result.data.user);
       localStorage.setItem("accessToken", result.data.token);
-      if (result.data.refresh_token) {
-        localStorage.setItem("refreshToken", result.data.refresh_token);
+      if (result.data.refreshToken) {
+        localStorage.setItem("refreshToken", result.data.refreshToken);
+      }
+      // Store device_id for logout
+      if (device_id) {
+        localStorage.setItem("deviceId", device_id);
       }
       localStorage.setItem("userData", JSON.stringify(result.data.user));
       localStorage.setItem("hasAuth", "true");

@@ -161,6 +161,7 @@
     "cart": {
         "yourCart": "Your Cart",
         "emptyCart": "Your cart is empty",
+        "emptyCartDesc": "Start adding items to your cart",
         "checkout": "Checkout",
         "total": "Total",
         "shoppingCart": "Shopping Cart",

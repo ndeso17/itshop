@@ -159,6 +159,7 @@
     "cart": {
         "yourCart": "장바구니",
         "emptyCart": "장바구니가 비어있습니다",
+        "emptyCartDesc": "장바구니에 상품을 담아보세요",
         "checkout": "결제하기",
         "total": "합계",
         "shoppingCart": "장바구니",

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { addToWishlist } from "../../utils/cart";
 import { addToCart as apiAddToCart } from "../../api/cart";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 import Swal from "sweetalert2";
 import { formatCurrency } from "../../utils/currency";
 
@@ -19,6 +20,7 @@ const ProductCard = ({ product, showNew = false }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { refreshCart } = useCart();
 
   const [showShare, setShowShare] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -86,8 +88,14 @@ const ProductCard = ({ product, showNew = false }) => {
       return;
     }
 
+    // Determine variant_id (use first variant if available)
+    let variantId = product.id;
+    if (product.variants && product.variants.length > 0) {
+      variantId = product.variants[0].id;
+    }
+
     const result = await apiAddToCart({
-      variant_id: product.id,
+      variant_id: variantId,
       qty: 1,
     });
 
@@ -100,6 +108,10 @@ const ProductCard = ({ product, showNew = false }) => {
       timer: result.success ? 1500 : undefined,
       showConfirmButton: !result.success,
     });
+
+    if (result.success) {
+      refreshCart();
+    }
   };
 
   const handleAddToWishlist = (e) => {

@@ -12,3 +12,20 @@ export const getProfile = async () => {
     };
   }
 };
+
+export const updateProfile = async (userData) => {
+  try {
+    // Using POST as per specifications for updating profile
+    const response = await api.post("/api/profile", userData);
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to update profile",
+    };
+  }
+};

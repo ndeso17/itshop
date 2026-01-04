@@ -211,7 +211,14 @@ const Cart = () => {
                 </div>
                 <div className="item-image">
                   <Link to={`/products/${item.id}`}>
-                    <img src={item.image} alt={item.name} />
+                    <img
+                      src={
+                        item.image && item.image.startsWith("/")
+                          ? `http://localhost:3000${item.image}`
+                          : item.image || "https://via.placeholder.com/100"
+                      }
+                      alt={item.name}
+                    />
                   </Link>
                 </div>
                 <div className="item-details">

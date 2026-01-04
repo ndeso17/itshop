@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import {
@@ -14,6 +16,8 @@ import {
 
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
+  const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -116,18 +120,28 @@ const Navbar = () => {
                     className="btn btn-link text-dark position-relative p-0"
                   >
                     <IoHeartOutline size={24} />
+                    {wishlistCount > 0 && (
+                      <span
+                        className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style={{ fontSize: "0.6rem" }}
+                      >
+                        {wishlistCount}
+                      </span>
+                    )}
                   </Link>
                   <Link
                     to="/cart"
                     className="btn btn-link text-dark position-relative p-0"
                   >
                     <IoBagOutline size={24} />
-                    <span
-                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                      style={{ fontSize: "0.6rem" }}
-                    >
-                      3
-                    </span>
+                    {cartCount > 0 && (
+                      <span
+                        className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style={{ fontSize: "0.6rem" }}
+                      >
+                        {cartCount}
+                      </span>
+                    )}
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -161,9 +175,11 @@ const Navbar = () => {
               className="d-md-none btn btn-link text-dark position-relative p-0"
             >
               <IoBagOutline size={24} />
-              <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                <span className="visually-hidden">New alerts</span>
-              </span>
+              {cartCount > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                  <span className="visually-hidden">New alerts</span>
+                </span>
+              )}
             </Link>
           </div>
         </div>
@@ -173,7 +189,7 @@ const Navbar = () => {
       <div className="bg-white border-bottom d-none d-md-block">
         <div className="container">
           <ul className="nav justify-content-center py-2">
-            {["women", "men", "kids", "baby", "unisex", "beauty"].map((cat) => (
+            {["wanita", "pria", "anak", "bayi", "unisex"].map((cat) => (
               <li className="nav-item" key={cat}>
                 <Link
                   to={`/products?category=${cat}`}

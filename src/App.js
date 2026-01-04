@@ -3,6 +3,8 @@ import ErrorBoundary from "./components/layout/ErrorBoundary";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
+import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
 import { setAuthTokenGetter } from "./api/axios";
 import AppRoutes from "./routes/AppRoutes";
 import "./App.css";
@@ -29,11 +31,13 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <LanguageProvider>
-          <LanguageProvider>
-            <ErrorBoundary>
-              <AppContent />
-            </ErrorBoundary>
-          </LanguageProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <ErrorBoundary>
+                <AppContent />
+              </ErrorBoundary>
+            </WishlistProvider>
+          </CartProvider>
         </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>

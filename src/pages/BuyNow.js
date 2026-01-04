@@ -14,6 +14,15 @@ const BuyNow = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const API_BASE_URL = "http://localhost:3000";
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath)
+      return "https://www.dummyimg.in/placeholder?width=400&height=500";
+    if (imagePath.startsWith("http")) return imagePath;
+    return `${API_BASE_URL}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+  };
+
   // Initialize from navigation state
   const [items] = useState(() => {
     if (location.state?.products) {
@@ -21,6 +30,7 @@ const BuyNow = () => {
         ...p,
         qty: Number(p.qty) || Number(p.quantity) || 1,
         price: Number(p.price) || 0,
+        image: getImageUrl(p.image || p.images?.[0]),
       }));
     }
     return location.state?.product
@@ -29,6 +39,9 @@ const BuyNow = () => {
             ...location.state.product,
             qty: 1,
             price: Number(location.state.product.price) || 0,
+            image: getImageUrl(
+              location.state.product.image || location.state.product.images?.[0]
+            ),
           },
         ]
       : [];
@@ -43,8 +56,9 @@ const BuyNow = () => {
   // Form State
   const [formData, setFormData] = useState({
     name: user?.full_name || "",
-    phone: user?.phone_number || user?.phone || user?.phoneNumber || "",
-    address: user?.address || "",
+    phone:
+      user?.phone_number || user?.phone || user?.phoneNumber || user?.tel || "",
+    address: user?.address || user?.user_address || "",
   });
 
   const [selectedVoucher, setSelectedVoucher] = useState("");

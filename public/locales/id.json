@@ -160,6 +160,7 @@
     "cart": {
         "yourCart": "Keranjang Anda",
         "emptyCart": "Keranjang Anda kosong",
+        "emptyCartDesc": "Mulai tambahkan produk ke keranjang Anda",
         "checkout": "Pembayaran",
         "total": "Total",
         "shoppingCart": "Keranjang Belanja",

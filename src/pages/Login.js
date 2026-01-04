@@ -54,8 +54,8 @@ const Login = () => {
     setLoading(false);
   };
 
-  const handleOTPVerify = async (email, device_id, otp) => {
-    const result = await verifyOTP(email, device_id, otp);
+  const handleOTPVerify = async (email, device_id, otp, rememberMe) => {
+    const result = await verifyOTP(email, device_id, otp, rememberMe);
 
     if (result.success) {
       setShowOTPModal(false);

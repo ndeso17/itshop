@@ -42,12 +42,13 @@ export const login = async (email, password) => {
  * @param {string} otp - 6-digit OTP code
  * @returns {Promise<{success: boolean, data: {token, user, expires_in}, message: string}>}
  */
-export const verifyOTP = async (email, device_id, otp) => {
+export const verifyOTP = async (email, device_id, otp, rememberMe) => {
   try {
     const response = await api.put("/api/auth/verify-login", {
       email,
       device_id,
       otp,
+      remember_me: rememberMe,
     });
 
     return {
@@ -108,7 +109,10 @@ export const register = async (userData) => {
  */
 export const logout = async () => {
   try {
-    const response = await api.delete("/api/auth/logout");
+    const deviceId = localStorage.getItem("deviceId");
+    const response = await api.delete("/api/auth/logout", {
+      data: { device_id: deviceId },
+    });
 
     return {
       success: true,
@@ -128,36 +132,66 @@ export const logout = async () => {
 
 /**
  * Refresh access token
- * Requires Bearer token in headers (handled by axios interceptor)
+ * Sends both cookies and Authorization header for compatibility
  * @returns {Promise<{success: boolean, data: {token, user, expires_in}, message: string}>}
  */
 export const refreshToken = async () => {
   try {
-    const refreshToken = localStorage.getItem("refreshToken");
-    const response = await api.post(
-      "/api/auth/refresh",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      }
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+
+    console.log(
+      "[Auth API] Refresh token from localStorage:",
+      storedRefreshToken ? "exists" : "missing"
     );
 
+    // Build headers - always include Content-Type
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    // Add Authorization header if we have a stored refresh token
+    if (storedRefreshToken) {
+      headers["Authorization"] = `Bearer ${storedRefreshToken}`;
+    }
+
+    console.log(
+      "[Auth API] Calling refresh token endpoint with headers:",
+      Object.keys(headers)
+    );
+
+    // Use fetch with credentials to send cookies AND Authorization header
+    const response = await fetch("http://localhost:3000/api/auth/refresh", {
+      method: "POST",
+      headers: headers,
+      credentials: "include", // This sends HttpOnly cookies
+      body: JSON.stringify({}),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("[Auth API] Refresh failed:", response.status, data);
+      return {
+        success: false,
+        status: response.status,
+        message: data.message || "Token refresh failed. Please login again.",
+        error: data,
+      };
+    }
+
+    console.log("[Auth API] Refresh successful");
     return {
       success: true,
-      data: response.data.data,
-      message: response.data.message,
+      data: data.data,
+      message: data.message,
     };
   } catch (error) {
-    console.error("Token refresh error:", error);
+    console.error("[Auth API] Token refresh error:", error);
     return {
       success: false,
-      status: error.response?.status,
-      message:
-        error.response?.data?.message ||
-        "Token refresh failed. Please login again.",
-      error: error.response?.data,
+      status: 0,
+      message: "Network error during token refresh.",
+      error: error,
     };
   }
 };

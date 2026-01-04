@@ -15,8 +15,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "../utils/currency";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import api from "../api/axios";
-import { getProductBySlug } from "../api/products";
+
 import { addToCart as apiAddToCart } from "../api/cart";
 import { addToWishlist } from "../utils/cart";
 import Swal from "sweetalert2";
@@ -26,6 +27,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const { refreshCart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,8 +62,12 @@ const ProductDetail = () => {
           }
         }
 
-        const data = await getProductBySlug(fetchSlug);
-        const productData = data.data;
+        const response = await api.get(`/api/product/${fetchSlug}`);
+        const productData = response.data?.data;
+
+        if (!productData) {
+          throw new Error("Product data not found");
+        }
 
         // Transform
         const images =
@@ -155,6 +161,7 @@ const ProductDetail = () => {
         timer: 1500,
         showConfirmButton: false,
       });
+      refreshCart();
     } else {
       Swal.fire({ icon: "error", title: "Failed", text: result.message });
     }
