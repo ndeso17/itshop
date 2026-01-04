@@ -285,28 +285,9 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Logout current user
+   * Note: Confirmation dialog should be shown by the caller (e.g., Navbar)
    */
   const logout = async () => {
-    // Show confirmation dialog
-    const confirmResult = await Swal.fire({
-      title: "Logout",
-      text: "Are you sure you want to logout?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Logout",
-      cancelButtonText: "Cancel",
-      customClass: {
-        popup: "swal-custom-popup",
-        confirmButton: "swal-confirm-btn",
-        cancelButton: "swal-cancel-btn",
-      },
-      buttonsStyling: false,
-    });
-
-    if (!confirmResult.isConfirmed) {
-      return { success: false, cancelled: true };
-    }
-
     // Call logout API
     await authAPI.logout();
 

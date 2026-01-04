@@ -133,7 +133,8 @@
         "passwordMismatch": "Kata sandi tidak cocok",
         "cancel": "Batal",
         "logoutConfirm": "Apakah Anda yakin ingin keluar?",
-        "yes": "Ya"
+        "yes": "Ya",
+        "rememberMe": "Ingat saya di perangkat ini"
     },
     "product": {
         "addToCart": "Tambah ke Keranjang",

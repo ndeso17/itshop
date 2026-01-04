@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const OTPModal = ({ isOpen, email, device_id, onVerify, onCancel }) => {
+  // const { t } = useTranslation();
   const { t } = useTranslation();
 
   const [otp, setOtp] = useState("");

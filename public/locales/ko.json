@@ -132,7 +132,8 @@
         "passwordMatch": "비밀번호가 일치합니다",
         "passwordMismatch": "비밀번호가 일치하지 않습니다",
         "cancel": "취소",
-        "yes": "예"
+        "yes": "예",
+        "rememberMe": "이 기기에서 로그인 유지"
     },
     "product": {
         "addToCart": "장바구니 담기",

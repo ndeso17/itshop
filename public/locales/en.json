@@ -134,7 +134,8 @@
         "passwordMatch": "Passwords match",
         "passwordMismatch": "Passwords do not match",
         "no": "No",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "rememberMe": "Remember me on this device"
     },
     "product": {
         "addToCart": "Add to Cart",
