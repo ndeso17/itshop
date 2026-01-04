@@ -21,10 +21,13 @@ const API_BASE_URL = "http://localhost:3000";
 
 const Profile = () => {
   const { user: contextUser } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [user, setUser] = React.useState(contextUser);
   const [isEditing, setIsEditing] = React.useState(false);
   const [formData, setFormData] = React.useState({});
+  const [avatarPreview, setAvatarPreview] = React.useState(null);
+  const [avatarError, setAvatarError] = React.useState(false);
+  const avatarFileRef = React.useRef(null);
 
   React.useEffect(() => {
     if (user) {
@@ -66,13 +69,45 @@ const Profile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+      // Store file in formData (or you could store it separately for upload)
+      setFormData((prev) => ({ ...prev, avatarFile: file }));
+    }
+  };
+
   const handleSave = async () => {
     try {
-      // Filter out empty strings if needed, or send as is
-      const result = await updateProfile(formData);
+      // Create FormData for file upload support
+      const submitData = new FormData();
+
+      // Add text fields
+      if (formData.full_name)
+        submitData.append("full_name", formData.full_name);
+      if (formData.username) submitData.append("username", formData.username);
+      if (formData.phone_number)
+        submitData.append("phone_number", formData.phone_number);
+      if (formData.gender) submitData.append("gender", formData.gender);
+      if (formData.birth_date)
+        submitData.append("birth_date", formData.birth_date);
+      if (formData.address) submitData.append("address", formData.address);
+      if (formData.email) submitData.append("email", formData.email);
+
+      // Add avatar file if selected
+      if (formData.avatarFile) {
+        submitData.append("avatar", formData.avatarFile);
+      }
+
+      const result = await updateProfile(submitData);
       if (result.success) {
         setUser(result.data);
         setIsEditing(false);
+        setAvatarPreview(null); // Clear preview after save
+        setAvatarError(false); // Reset avatar error state
         Swal.fire({
           icon: "success",
           title: "Success",
@@ -125,7 +160,9 @@ const Profile = () => {
         style={{ minHeight: "50vh" }}
       >
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">
+            {t("profile.loading") || "Loading..."}
+          </span>
         </div>
       </div>
     );
@@ -134,10 +171,34 @@ const Profile = () => {
   const formatDate = (dateString, includeTime = false) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
+
+    // Determine locale based on current language
+    const localeMap = {
+      id: "id-ID",
+      ko: "ko-KR",
+      en: "en-US",
+    };
+    const locale = localeMap[i18n.language] || "en-US";
+
+    // Indonesia uses 24-hour format, others use 12-hour
+    const use24Hour = i18n.language === "id";
+
     if (includeTime) {
-      return date.toLocaleString();
+      return date.toLocaleString(locale, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: !use24Hour,
+      });
     }
-    return date.toLocaleDateString();
+    return date.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const getAvatarUrl = (avatarPath) => {
@@ -176,19 +237,25 @@ const Profile = () => {
                 >
                   <div
                     className="rounded-circle overflow-hidden w-100 h-100 border border-3 border-light shadow-sm d-flex align-items-center justify-content-center bg-dark text-white text-uppercase"
-                    style={{ fontSize: "2.5rem" }}
+                    style={{
+                      fontSize: "2.5rem",
+                      cursor: isEditing ? "pointer" : "default",
+                    }}
+                    onClick={() => isEditing && avatarFileRef.current?.click()}
                   >
-                    {user.avatar ? (
+                    {/* Show preview if editing and preview exists, otherwise show current avatar */}
+                    {isEditing && avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Preview"
+                        className="w-100 h-100 object-fit-cover"
+                      />
+                    ) : user.avatar && !avatarError ? (
                       <img
                         src={getAvatarUrl(user.avatar)}
                         alt={user.full_name}
                         className="w-100 h-100 object-fit-cover"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.parentElement.innerHTML = user.full_name
-                            ? user.full_name[0]
-                            : "U";
-                        }}
+                        onError={() => setAvatarError(true)}
                       />
                     ) : user.full_name ? (
                       user.full_name[0]
@@ -196,18 +263,40 @@ const Profile = () => {
                       "U"
                     )}
                   </div>
+                  {/* Edit overlay indicator */}
+                  {isEditing && (
+                    <div
+                      className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => avatarFileRef.current?.click()}
+                    >
+                      <Edit2 size={14} />
+                    </div>
+                  )}
                 </div>
+
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={avatarFileRef}
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  style={{ display: "none" }}
+                />
 
                 {isEditing ? (
                   <>
-                    <input
-                      type="text"
-                      name="avatar"
-                      value={formData.avatar}
-                      onChange={handleInputChange}
-                      className="form-control form-control-sm mb-3"
-                      placeholder="Avatar URL path"
-                    />
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-secondary mb-3"
+                      onClick={() => avatarFileRef.current?.click()}
+                    >
+                      {t("profile.changeAvatar")}
+                    </button>
                     <input
                       type="text"
                       name="full_name"
@@ -229,7 +318,7 @@ const Profile = () => {
 
                 <div className="d-flex justify-content-center gap-2 mb-4">
                   <div className="badge bg-light text-dark border">
-                    Joined {formatDate(user.registered_at)}
+                    {t("profile.joined")} {formatDate(user.registered_at)}
                   </div>
                 </div>
 
@@ -247,16 +336,22 @@ const Profile = () => {
             {/* Account Status Card */}
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4">
-                <h6 className="card-title fw-bold mb-3">Account Info</h6>
+                <h6 className="card-title fw-bold mb-3">
+                  {t("profile.accountInfo")}
+                </h6>
                 <ul className="list-unstyled mb-0">
                   <li className="d-flex justify-content-between mb-2">
-                    <span className="text-secondary small">Status</span>
+                    <span className="text-secondary small">
+                      {t("profile.status")}
+                    </span>
                     <span className="badge bg-success-subtle text-success">
-                      {user.status_akun || "Active"}
+                      {t("profile.statusActive") || t("user.status_akun")}
                     </span>
                   </li>
                   <li className="d-flex justify-content-between">
-                    <span className="text-secondary small">Last Login</span>
+                    <span className="text-secondary small">
+                      {t("profile.lastLogin")}
+                    </span>
                     <span className="text-dark small">
                       {formatDate(user.last_login, true)}
                     </span>
@@ -270,7 +365,7 @@ const Profile = () => {
           <div className="col-lg-8">
             <div className="card border-0 shadow-sm h-100">
               <div className="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-                <h5 className="mb-0 fw-bold">Personal Information</h5>
+                <h5 className="mb-0 fw-bold">{t("profile.personalInfo")}</h5>
                 {!isEditing ? (
                   <button
                     className="btn btn-sm btn-light border d-flex align-items-center gap-2"

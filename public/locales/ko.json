@@ -43,7 +43,8 @@
         "resetFilters": "필터 초기화",
         "prev": "이전",
         "next": "다음",
-        "cancel": "취소"
+        "cancel": "취소",
+        "saveChanges": "변경사항 저장"
     },
     "nav": {
         "home": "홈",
@@ -283,6 +284,36 @@
         "birthDate": "생년월일",
         "role": "역할",
         "address": "주소",
-        "enterAddress": "주소를 입력하세요..."
+        "enterAddress": "주소를 입력하세요...",
+        "myOrders": "내 주문",
+        "accountInfo": "계정 정보",
+        "status": "상태",
+        "lastLogin": "마지막 로그인",
+        "joined": "가입일",
+        "personalInfo": "개인 정보",
+        "statusActive": "활성",
+        "statusInactive": "비활성",
+        "changeAvatar": "아바타 변경"
+    },
+    "orders": {
+        "title": "주문 내역",
+        "back": "뒤로",
+        "loading": "주문 불러오는 중...",
+        "noOrders": "주문 없음",
+        "noOrdersDesc": "아직 주문하신 내역이 없습니다.",
+        "startShopping": "쇼핑 시작하기",
+        "orderNumber": "주문 #",
+        "totalAmount": "총 금액",
+        "viewDetails": "상세 보기",
+        "items": "개 상품",
+        "viewDetailsForItems": "상품 상세 보기",
+        "tryAgain": "다시 시도",
+        "status": {
+            "pending": "대기중",
+            "paid": "결제완료",
+            "shipped": "배송중",
+            "delivered": "배송완료",
+            "cancelled": "취소됨"
+        }
     }
 }

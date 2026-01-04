@@ -43,7 +43,8 @@
         "resetFilters": "Reset Filters",
         "prev": "Prev",
         "next": "Next",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "saveChanges": "Save Changes"
     },
     "nav": {
         "home": "Home",
@@ -286,6 +287,36 @@
         "birthDate": "Birth Date",
         "role": "Role",
         "address": "Address",
-        "enterAddress": "Enter your address..."
+        "enterAddress": "Enter your address...",
+        "myOrders": "My Orders",
+        "accountInfo": "Account Info",
+        "status": "Status",
+        "lastLogin": "Last Login",
+        "joined": "Joined",
+        "personalInfo": "Personal Information",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "changeAvatar": "Change Avatar"
+    },
+    "orders": {
+        "title": "Order History",
+        "back": "Back",
+        "loading": "Loading orders...",
+        "noOrders": "No orders yet",
+        "noOrdersDesc": "You haven't placed any orders yet.",
+        "startShopping": "Start Shopping",
+        "orderNumber": "Order #",
+        "totalAmount": "Total Amount",
+        "viewDetails": "View Details",
+        "items": "Items",
+        "viewDetailsForItems": "View details for items",
+        "tryAgain": "Try Again",
+        "status": {
+            "pending": "Pending",
+            "paid": "Paid",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled"
+        }
     }
 }

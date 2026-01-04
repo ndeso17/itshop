@@ -66,12 +66,24 @@ const OrderHistory = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+    // Determine locale based on current language
+    const localeMap = {
+      id: "id-ID",
+      ko: "ko-KR",
+      en: "en-US",
+    };
+    const locale = localeMap[i18n.language] || "en-US";
+
+    // Indonesia uses 24-hour format, others use 12-hour
+    const use24Hour = i18n.language === "id";
+
+    return new Date(dateString).toLocaleDateString(locale, {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: !use24Hour,
     });
   };
 
@@ -79,7 +91,7 @@ const OrderHistory = () => {
     return (
       <div className="container py-5 text-center">
         <div className="spinner-border" role="status"></div>
-        <p>Loading orders...</p>
+        <p>{t("orders.loading") || "Loading orders..."}</p>
       </div>
     );
   }
@@ -88,7 +100,7 @@ const OrderHistory = () => {
     <div className="container order-history-page">
       <div className="page-header">
         <Link to="/profile" className="back-link">
-          <ArrowLeft size={20} /> Back
+          <ArrowLeft size={20} /> {t("orders.back") || "Back"}
         </Link>
         <h1>{t("orders.title") || "Order History"}</h1>
       </div>
@@ -101,16 +113,18 @@ const OrderHistory = () => {
             className="btn btn-primary mt-3"
             onClick={() => window.location.reload()}
           >
-            Try Again
+            {t("orders.tryAgain") || "Try Again"}
           </button>
         </div>
       ) : orders.length === 0 ? (
         <div className="empty-state">
           <Package size={64} className="text-gray-300 mb-4" />
-          <h3>No orders yet</h3>
-          <p>You haven't placed any orders yet.</p>
+          <h3>{t("orders.noOrders") || "No orders yet"}</h3>
+          <p>
+            {t("orders.noOrdersDesc") || "You haven't placed any orders yet."}
+          </p>
           <Link to="/products" className="btn btn-primary mt-4">
-            Start Shopping
+            {t("orders.startShopping") || "Start Shopping"}
           </Link>
         </div>
       ) : (
@@ -119,7 +133,9 @@ const OrderHistory = () => {
             <div key={order.id} className="order-card fade-in">
               <div className="order-header">
                 <div>
-                  <span className="order-id">Order #{order.id}</span>
+                  <span className="order-id">
+                    {t("orders.orderNumber") || "Order #"} {order.id}
+                  </span>
                   <span className="order-date">
                     <Clock size={14} className="mr-1" />
                     {formatDate(order.created_at)}
@@ -128,13 +144,15 @@ const OrderHistory = () => {
                 <span
                   className={`status-badge ${getStatusColor(order.status)}`}
                 >
-                  {order.status || "Pending"}
+                  {t(`orders.status.${order.status?.toLowerCase()}`) ||
+                    order.status ||
+                    "Pending"}
                 </span>
               </div>
 
               <div className="order-body">
                 <div className="order-summary">
-                  <span>Total Amount:</span>
+                  <span>{t("orders.totalAmount") || "Total Amount:"}</span>
                   <span className="amount">
                     {formatCurrency(order.total_amount, i18n.language)}
                   </span>
@@ -142,14 +160,16 @@ const OrderHistory = () => {
                 <div className="order-items-preview">
                   {/* If API returns items, show count */}
                   {order.items
-                    ? `${order.items.length} Items`
-                    : "View details for items"}
+                    ? `${order.items.length} ${t("orders.items") || "Items"}`
+                    : t("orders.viewDetailsForItems") ||
+                      "View details for items"}
                 </div>
               </div>
 
               <div className="order-footer">
                 <Link to={`/orders/${order.id}`} className="btn-detail">
-                  View Details <ChevronRight size={16} />
+                  {t("orders.viewDetails") || "View Details"}{" "}
+                  <ChevronRight size={16} />
                 </Link>
               </div>
             </div>

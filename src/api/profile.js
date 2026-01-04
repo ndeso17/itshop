@@ -13,10 +13,14 @@ export const getProfile = async () => {
   }
 };
 
-export const updateProfile = async (userData) => {
+export const updateProfile = async (formData) => {
   try {
-    // Using POST as per specifications for updating profile
-    const response = await api.post("/api/profile", userData);
+    // Using POST with FormData for file upload support
+    const response = await api.post("/api/profile", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return {
       success: true,
       data: response.data.data,

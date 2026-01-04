@@ -43,7 +43,8 @@
         "resetFilters": "Reset Filter",
         "prev": "Seb",
         "next": "Lan",
-        "cancel": "Batal"
+        "cancel": "Batal",
+        "saveChanges": "Simpan Perubahan"
     },
     "nav": {
         "home": "Beranda",
@@ -285,6 +286,36 @@
         "birthDate": "Tanggal Lahir",
         "role": "Peran",
         "address": "Alamat",
-        "enterAddress": "Masukkan alamat Anda..."
+        "enterAddress": "Masukkan alamat Anda...",
+        "myOrders": "Pesanan Saya",
+        "accountInfo": "Info Akun",
+        "status": "Status",
+        "lastLogin": "Login Terakhir",
+        "joined": "Bergabung",
+        "personalInfo": "Informasi Pribadi",
+        "statusActive": "Aktif",
+        "statusInactive": "Tidak Aktif",
+        "changeAvatar": "Ubah Avatar"
+    },
+    "orders": {
+        "title": "Riwayat Pesanan",
+        "back": "Kembali",
+        "loading": "Memuat pesanan...",
+        "noOrders": "Belum ada pesanan",
+        "noOrdersDesc": "Anda belum melakukan pesanan apapun.",
+        "startShopping": "Mulai Belanja",
+        "orderNumber": "Pesanan #",
+        "totalAmount": "Total",
+        "viewDetails": "Lihat Detail",
+        "items": "Item",
+        "viewDetailsForItems": "Lihat detail untuk item",
+        "tryAgain": "Coba Lagi",
+        "status": {
+            "pending": "Menunggu",
+            "paid": "Dibayar",
+            "shipped": "Dikirim",
+            "delivered": "Terkirim",
+            "cancelled": "Dibatalkan"
+        }
     }
 }
