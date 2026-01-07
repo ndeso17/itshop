@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varian Produk - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-store"></i>
+            <h1>Admin Dashboard</h1>
+        </div>
+        <div class="navbar-right">
+            <div class="navbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari produk, promo...">
+            </div>
+            <div class="navbar-icons">
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge"></span>
+                </button>
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
+            <div class="navbar-profile">
+                <div class="navbar-profile-avatar">
+                    <span>A</span>
+                </div>
+                <div class="navbar-profile-info">
+                    <span>Admin</span>
+                    <small>Administrator</small>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Admin Panel</div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="sidebar-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan Keuangan</span>
+                </a>
+                <a href="promo.html" class="sidebar-btn">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo & Diskon</span>
+                </a>
+                <a href="staff.html" class="sidebar-btn">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Kelola Staff</span>
+                </a>
+                <a href="settings.html" class="sidebar-btn">
+                    <i class="fas fa-store"></i>
+                    <span>Pengaturan Toko</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Mode Operator</div>
+            <div class="sidebar-menu">
+                <a href="orders.html" class="sidebar-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Daftar Pesanan</span>
+                </a>
+                <a href="products.html" class="sidebar-btn">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Katalog Produk</span>
+                </a>
+                <a href="variants.html" class="sidebar-btn active">
+                    <i class="fas fa-boxes"></i>
+                    <span>Stok & Varian</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <p>Login sebagai: <strong>Operator</strong></p>
+            <button class="sidebar-footer-btn" onclick="location.href='../../index.html'">Kembali ke Toko</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- VARIAN PRODUK -->
+            <div id="variants" class="content-panel active">
+                <div class="page-header">
+                    <h2>Varian Produk</h2>
+                    <p>Kelola semua varian produk Anda berdasarkan kategori dan jenis</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Tambah Varian Produk</h2>
+                    </div>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Nama Produk</label>
+                            <input type="text" id="productName" placeholder="Contoh: Kemeja Premium">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-users"></i> Kategori</label>
+                            <select id="productCategory">
+                                <option value="">Pilih Kategori</option>
+                                <option value="Pria">Pria</option>
+                                <option value="Wanita">Wanita</option>
+                                <option value="Anak-anak">Anak-anak</option>
+                                <option value="Unisex">Unisex</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tshirt"></i> Jenis</label>
+                            <select id="productType">
+                                <option value="">Pilih Jenis</option>
+                                <option value="Jaket">Jaket</option>
+                                <option value="Kaos">Kaos</option>
+                                <option value="Kemeja">Kemeja</option>
+                                <option value="Celana">Celana</option>
+                                <option value="Rok">Rok</option>
+                                <option value="Topi">Topi</option>
+                                <option value="Sepatu">Sepatu</option>
+                                <option value="Dress">Dress</option>
+                                <option value="Sweater">Sweater</option>
+                                <option value="Aksesoris">Aksesoris</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label><i class="fas fa-ruler"></i> Ukuran</label>
+                            <select id="productSize">
+                                <option value="">Pilih Ukuran</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="All Size">All Size</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-palette"></i> Warna</label>
+                            <input type="text" id="productColor" placeholder="Contoh: Beige">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-eye-dropper"></i> Kode Warna (Hex)</label>
+                            <input type="color" id="productColorCode" value="#D6A99D">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-boxes"></i> Stok</label>
+                            <input type="number" id="productStock" placeholder="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-money-bill-wave"></i> Harga (Rp)</label>
+                            <input type="number" id="productPrice" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="addVariant()">
+                        <i class="fas fa-plus"></i> Tambah Varian
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Daftar Varian Produk</h2>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="filter-section">
+                        <select id="filterCategory" onchange="filterVariants()">
+                            <option value="">Semua Kategori</option>
+                            <option value="Pria">Pria</option>
+                            <option value="Wanita">Wanita</option>
+                            <option value="Anak-anak">Anak-anak</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+                        <select id="filterType" onchange="filterVariants()">
+                            <option value="">Semua Jenis</option>
+                            <option value="Jaket">Jaket</option>
+                            <option value="Kaos">Kaos</option>
+                            <option value="Kemeja">Kemeja</option>
+                            <option value="Celana">Celana</option>
+                            <option value="Rok">Rok</option>
+                            <option value="Topi">Topi</option>
+                            <option value="Sepatu">Sepatu</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Sweater">Sweater</option>
+                            <option value="Aksesoris">Aksesoris</option>
+                        </select>
+                        <button onclick="resetFilters()"><i class="fas fa-redo"></i> Reset Filter</button>
+                    </div>
+
+                    <div class="variant-list" id="variantList">
+                        <div class="variant-item" data-category="Pria" data-type="Kemeja">
+                            <div class="variant-badges">
+                                <span class="variant-badge badge-kategori"><i class="fas fa-male"></i> Pria</span>
+                                <span class="variant-badge badge-jenis"><i class="fas fa-tshirt"></i> Kemeja</span>
+                            </div>
+                            <h3>Kemeja Premium</h3>
+                            <p><strong>Size:</strong> M</p>
+                            <p><strong>Warna:</strong> <span class="color-preview" style="background: #D6A99D;"></span>
+                                Beige</p>
+                            <p><strong>Stok:</strong> 50 pcs</p>
+                            <p><strong>Harga:</strong> Rp 350.000</p>
+                            <div class="action-btns">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deleteVariant(this)">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="variant-item" data-category="Pria" data-type="Celana">
+                            <div class="variant-badges">
+                                <span class="variant-badge badge-kategori"><i class="fas fa-male"></i> Pria</span>
+                                <span class="variant-badge badge-jenis"><i class="fas fa-socks"></i> Celana</span>
+                            </div>
+                            <h3>Celana Chino</h3>
+                            <p><strong>Size:</strong> L</p>
+                            <p><strong>Warna:</strong> <span class="color-preview" style="background: #9CAFAA;"></span>
+                                Sage</p>
+                            <p><strong>Stok:</strong> 30 pcs</p>
+                            <p><strong>Harga:</strong> Rp 425.000</p>
+                            <div class="action-btns">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deleteVariant(this)">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="variant-item" data-category="Wanita" data-type="Dress">
+                            <div class="variant-badges">
+                                <span class="variant-badge badge-kategori"><i class="fas fa-female"></i> Wanita</span>
+                                <span class="variant-badge badge-jenis"><i class="fas fa-vest"></i> Dress</span>
+                            </div>
+                            <h3>Summer Dress Floral</h3>
+                            <p><strong>Size:</strong> S</p>
+                            <p><strong>Warna:</strong> <span class="color-preview" style="background: #D6A99D;"></span>
+                                Rose</p>
+                            <p><strong>Stok:</strong> 25 pcs</p>
+                            <p><strong>Harga:</strong> Rp 550.000</p>
+                            <div class="action-btns">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deleteVariant(this)">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="variant-item" data-category="Anak-anak" data-type="Kaos">
+                            <div class="variant-badges">
+                                <span class="variant-badge badge-kategori"><i class="fas fa-child"></i> Anak-anak</span>
+                                <span class="variant-badge badge-jenis"><i class="fas fa-tshirt"></i> Kaos</span>
+                            </div>
+                            <h3>Kaos Kartun</h3>
+                            <p><strong>Size:</strong> S</p>
+                            <p><strong>Warna:</strong> <span class="color-preview" style="background: #FBF3D5;"></span>
+                                Cream</p>
+                            <p><strong>Stok:</strong> 100 pcs</p>
+                            <p><strong>Harga:</strong> Rp 125.000</p>
+                            <div class="action-btns">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deleteVariant(this)">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="variant-item" data-category="Unisex" data-type="Jaket">
+                            <div class="variant-badges">
+                                <span class="variant-badge badge-kategori"><i class="fas fa-venus-mars"></i>
+                                    Unisex</span>
+                                <span class="variant-badge badge-jenis"><i class="fas fa-vest-patches"></i> Jaket</span>
+                            </div>
+                            <h3>Jaket Hoodie Premium</h3>
+                            <p><strong>Size:</strong> XL</p>
+                            <p><strong>Warna:</strong> <span class="color-preview" style="background: #D6DAC8;"></span>
+                                Sage Green</p>
+                            <p><strong>Stok:</strong> 45 pcs</p>
+                            <p><strong>Harga:</strong> Rp 475.000</p>
+                            <div class="action-btns">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deleteVariant(this)">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="variant-item" data-category="Wanita" data-type="Rok">
+                            <div class="variant-badges">
+                                <span class="variant-badge badge-kategori"><i class="fas fa-female"></i> Wanita</span>
+                                <span class="variant-badge badge-jenis"><i class="fas fa-plus"></i> Rok</span>
+                            </div>
+                            <h3>Rok Pleated Midi</h3>
+                            <p><strong>Size:</strong> M</p>
+                            <p><strong>Warna:</strong> <span class="color-preview" style="background: #9CAFAA;"></span>
+                                Mint</p>
+                            <p><strong>Stok:</strong> 35 pcs</p>
+                            <p><strong>Harga:</strong> Rp 325.000</p>
+                            <div class="action-btns">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deleteVariant(this)">Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon success" id="modalIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 id="modalTitle">Berhasil!</h3>
+            <p id="modalMessage">Data berhasil ditambahkan.</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Konfirmasi</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus item ini?</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-secondary" onclick="closeConfirmModal()">Batal</button>
+                <button class="modal-btn modal-btn-primary" id="confirmBtn" onclick="confirmAction()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jenis Produk - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-store"></i>
+            <h1>Admin Dashboard</h1>
+        </div>
+        <div class="navbar-right">
+            <div class="navbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari produk, promo...">
+            </div>
+            <div class="navbar-icons">
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge"></span>
+                </button>
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
+            <div class="navbar-profile">
+                <div class="navbar-profile-avatar">
+                    <span>A</span>
+                </div>
+                <div class="navbar-profile-info">
+                    <span>Admin</span>
+                    <small>Administrator</small>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Menu Utama</div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="sidebar-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan Keuangan</span>
+                </a>
+                <a href="variants.html" class="sidebar-btn">
+                    <i class="fas fa-box-open"></i>
+                    <span>Varian Produk</span>
+                </a>
+                <a href="types.html" class="sidebar-btn active">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Jenis Produk</span>
+                </a>
+                <a href="categories.html" class="sidebar-btn">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Kategori</span>
+                </a>
+                <a href="payment.html" class="sidebar-btn">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Pembayaran & Pengiriman</span>
+                </a>
+                <a href="promo.html" class="sidebar-btn">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo & Diskon</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Lainnya</div>
+            <div class="sidebar-menu">
+                <a href="settings.html" class="sidebar-btn">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <p>Butuh bantuan?</p>
+            <button class="sidebar-footer-btn" onclick="showComingSoon()">
+                <i class="fas fa-headset"></i> Hubungi Support
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h2>Jenis Produk</h2>
+                <p>Kelola daftar jenis produk yang tersedia di toko Anda</p>
+            </div>
+
+            <!-- Add Type Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Tambah Jenis Baru</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Nama Jenis</label>
+                        <input type="text" id="typeName" placeholder="Contoh: Hoodie">
+                    </div>
+                    <div class="form-group">
+                        <label>Ikon (Font Awesome Class)</label>
+                        <input type="text" id="typeIcon" placeholder="Contoh: fa-tshirt" value="fa-box">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="addType()">
+                    <i class="fas fa-plus"></i> Tambah Jenis
+                </button>
+            </div>
+
+            <!-- List Type Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Daftar Jenis Produk</h2>
+                </div>
+
+                <div id="typesList" class="grid-3">
+                    <!-- Example Types -->
+                    <div class="variant-item type-item">
+                        <div style="font-size: 24px; color: var(--accent); margin-bottom: 10px;">
+                            <i class="fas fa-vest-patches"></i>
+                        </div>
+                        <h3>Jaket</h3>
+                        <p>Total Produk: 12</p>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-delete" onclick="deleteType(this)">Hapus</button>
+                        </div>
+                    </div>
+
+                    <div class="variant-item type-item">
+                        <div style="font-size: 24px; color: var(--accent); margin-bottom: 10px;">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h3>Kaos</h3>
+                        <p>Total Produk: 45</p>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-delete" onclick="deleteType(this)">Hapus</button>
+                        </div>
+                    </div>
+
+                    <div class="variant-item type-item">
+                        <div style="font-size: 24px; color: var(--accent); margin-bottom: 10px;">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h3>Kemeja</h3>
+                        <p>Total Produk: 28</p>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-delete" onclick="deleteType(this)">Hapus</button>
+                        </div>
+                    </div>
+
+                    <div class="variant-item type-item">
+                        <div style="font-size: 24px; color: var(--accent); margin-bottom: 10px;">
+                            <i class="fas fa-socks"></i>
+                        </div>
+                        <h3>Celana</h3>
+                        <p>Total Produk: 30</p>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-delete" onclick="deleteType(this)">Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal placeholders (shared) -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon success" id="modalIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 id="modalTitle">Berhasil!</h3>
+            <p id="modalMessage">Data berhasil ditambahkan.</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Konfirmasi</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus item ini?</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-secondary" onclick="closeConfirmModal()">Batal</button>
+                <button class="modal-btn modal-btn-primary" id="confirmBtn" onclick="confirmAction()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

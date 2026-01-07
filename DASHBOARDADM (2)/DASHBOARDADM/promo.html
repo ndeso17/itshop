@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo & Diskon - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-store"></i>
+            <h1>Admin Dashboard</h1>
+        </div>
+        <div class="navbar-right">
+            <div class="navbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari produk, promo...">
+            </div>
+            <div class="navbar-icons">
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge"></span>
+                </button>
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
+            <div class="navbar-profile">
+                <div class="navbar-profile-avatar">
+                    <span>A</span>
+                </div>
+                <div class="navbar-profile-info">
+                    <span>Admin</span>
+                    <small>Administrator</small>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Admin Panel</div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="sidebar-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan Keuangan</span>
+                </a>
+                <a href="promo.html" class="sidebar-btn active">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo & Diskon</span>
+                </a>
+                <a href="staff.html" class="sidebar-btn">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Kelola Staff</span>
+                </a>
+                <a href="settings.html" class="sidebar-btn">
+                    <i class="fas fa-store"></i>
+                    <span>Pengaturan Toko</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Mode Operator</div>
+            <div class="sidebar-menu">
+                <a href="orders.html" class="sidebar-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Daftar Pesanan</span>
+                </a>
+                <a href="products.html" class="sidebar-btn">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Katalog Produk</span>
+                </a>
+                <a href="variants.html" class="sidebar-btn">
+                    <i class="fas fa-boxes"></i>
+                    <span>Stok & Varian</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <p>Login sebagai: <strong>Admin</strong></p>
+            <button class="sidebar-footer-btn" onclick="location.href='../../index.html'">Kembali ke Toko</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- PROMO & DISKON -->
+            <div id="promo" class="content-panel active">
+                <div class="page-header">
+                    <h2>Promo & Diskon</h2>
+                    <p>Buat dan kelola promo untuk pelanggan</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Buat Promo Baru</h2>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Nama Promo</label>
+                            <input type="text" id="promoName" placeholder="Contoh: Flash Sale Kemerdekaan">
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Promo</label>
+                            <input type="text" id="promoCode" placeholder="Contoh: MERDEKA24">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipe Diskon</label>
+                            <select id="promoType">
+                                <option value="percentage">Persentase (%)</option>
+                                <option value="fixed">Nominal (Rp)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nilai Diskon</label>
+                            <input type="number" id="promoValue" placeholder="Contoh: 25">
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Mulai</label>
+                            <input type="date" id="promoStart">
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Berakhir</label>
+                            <input type="date" id="promoEnd">
+                        </div>
+                        <div class="form-group">
+                            <label>Min. Pembelian (Rp)</label>
+                            <input type="number" id="promoMin" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Kuota Penggunaan</label>
+                            <input type="number" id="promoQuota" placeholder="Unlimited jika kosong">
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="addPromo()">
+                        <i class="fas fa-plus"></i> Buat Promo
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Promo Aktif</h2>
+                    </div>
+                    <div id="promoList">
+                        <div class="promo-card">
+                            <h3><i class="fas fa-fire"></i> Flash Sale Akhir Tahun</h3>
+                            <div class="promo-code">TAHUNBARU2025</div>
+                            <p>Diskon 30% untuk semua produk</p>
+                            <p><strong>Berlaku:</strong> 20 Des 2024 - 5 Jan 2025</p>
+                            <p><strong>Min. Pembelian:</strong> Rp 500.000</p>
+                            <p><strong>Terpakai:</strong> 45 / 100</p>
+                            <div class="action-btns" style="margin-top: 15px;">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deletePromo(this)">Non-aktifkan</button>
+                            </div>
+                        </div>
+
+                        <div class="promo-card"
+                            style="background: linear-gradient(135deg, var(--accent) 0%, #8a9f9a 100%);">
+                            <h3><i class="fas fa-gift"></i> Member Baru</h3>
+                            <div class="promo-code">WELCOME50</div>
+                            <p>Diskon Rp 50.000 untuk member baru</p>
+                            <p><strong>Berlaku:</strong> Permanent</p>
+                            <p><strong>Min. Pembelian:</strong> Rp 200.000</p>
+                            <p><strong>Terpakai:</strong> 128 / Unlimited</p>
+                            <div class="action-btns" style="margin-top: 15px;">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="deletePromo(this)">Non-aktifkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon success" id="modalIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 id="modalTitle">Berhasil!</h3>
+            <p id="modalMessage">Data berhasil ditambahkan.</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Konfirmasi</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus item ini?</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-secondary" onclick="closeConfirmModal()">Batal</button>
+                <button class="modal-btn modal-btn-primary" id="confirmBtn" onclick="confirmAction()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

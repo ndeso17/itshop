@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Produk - Operator Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .product-item {
+            background: var(--light);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .product-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            background: var(--tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--accent);
+            position: relative;
+        }
+
+        .product-content {
+            padding: 20px;
+        }
+
+        .product-content h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-box"></i>
+            <h1>Operator Panel</h1>
+        </div>
+        <div class="navbar-right">
+            <button class="btn-primary" onclick="showComingSoon()"><i class="fas fa-plus"></i> Produk Baru</button>
+        </div>
+    </nav>
+
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Admin Panel</div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="sidebar-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan Keuangan</span>
+                </a>
+                <a href="promo.html" class="sidebar-btn">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo & Diskon</span>
+                </a>
+                <a href="staff.html" class="sidebar-btn">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Kelola Staff</span>
+                </a>
+                <a href="settings.html" class="sidebar-btn">
+                    <i class="fas fa-store"></i>
+                    <span>Pengaturan Toko</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Mode Operator</div>
+            <div class="sidebar-menu">
+                <a href="orders.html" class="sidebar-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Daftar Pesanan</span>
+                </a>
+                <a href="products.html" class="sidebar-btn active">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Katalog Produk</span>
+                </a>
+                <a href="variants.html" class="sidebar-btn">
+                    <i class="fas fa-boxes"></i>
+                    <span>Stok & Varian</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h2>Katalog Produk</h2>
+                <p>Kelola daftar produk utama yang tampil di website</p>
+            </div>
+
+            <div class="product-grid">
+                <div class="product-item">
+                    <div class="product-img"><i class="fas fa-socks"></i></div>
+                    <div class="product-content">
+                        <h3>Hoodie Premium Beige</h3>
+                        <div class="product-price">Rp 350.000</div>
+                        <div class="product-meta">
+                            <span>24 Varian</span>
+                            <span>Stok: 120</span>
+                        </div>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-edit" style="flex:1;">Edit</button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-img"><i class="fas fa-hat-cowboy"></i></div>
+                    <div class="product-content">
+                        <h3>Oversized T-Shirt Black</h3>
+                        <div class="product-price">Rp 185.000</div>
+                        <div class="product-meta">
+                            <span>12 Varian</span>
+                            <span>Stok: 45</span>
+                        </div>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-edit" style="flex:1;">Edit</button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-img"><i class="fas fa-vest"></i></div>
+                    <div class="product-content">
+                        <h3>Chino Pants Slim Fit</h3>
+                        <div class="product-price">Rp 275.000</div>
+                        <div class="product-meta">
+                            <span>8 Varian</span>
+                            <span>Stok: 21</span>
+                        </div>
+                        <div class="action-btns" style="margin-top: 15px;">
+                            <button class="btn-edit" style="flex:1;">Edit</button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

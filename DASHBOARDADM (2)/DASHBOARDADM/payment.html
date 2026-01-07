@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran & Pengiriman - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-store"></i>
+            <h1>Admin Dashboard</h1>
+        </div>
+        <div class="navbar-right">
+            <div class="navbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari produk, promo...">
+            </div>
+            <div class="navbar-icons">
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge"></span>
+                </button>
+                <button class="navbar-icon-btn">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
+            <div class="navbar-profile">
+                <div class="navbar-profile-avatar">
+                    <span>A</span>
+                </div>
+                <div class="navbar-profile-info">
+                    <span>Admin</span>
+                    <small>Administrator</small>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Menu Utama</div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="sidebar-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Laporan Keuangan</span>
+                </a>
+                <a href="variants.html" class="sidebar-btn">
+                    <i class="fas fa-box-open"></i>
+                    <span>Varian Produk</span>
+                </a>
+                <a href="types.html" class="sidebar-btn">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Jenis Produk</span>
+                </a>
+                <a href="categories.html" class="sidebar-btn">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Kategori</span>
+                </a>
+                <a href="payment.html" class="sidebar-btn active">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Pembayaran & Pengiriman</span>
+                </a>
+                <a href="promo.html" class="sidebar-btn">
+                    <i class="fas fa-tags"></i>
+                    <span>Promo & Diskon</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Lainnya</div>
+            <div class="sidebar-menu">
+                <a href="settings.html" class="sidebar-btn">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <p>Butuh bantuan?</p>
+            <button class="sidebar-footer-btn" onclick="showComingSoon()">
+                <i class="fas fa-headset"></i> Hubungi Support
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- PEMBAYARAN & PENGIRIMAN -->
+            <div id="payment" class="content-panel active">
+                <div class="page-header">
+                    <h2>Pembayaran & Pengiriman</h2>
+                    <p>Atur metode pembayaran dan pengiriman</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Metode Pembayaran</h2>
+                        <button class="btn-primary" onclick="showComingSoon()">
+                            <i class="fas fa-plus"></i> Tambah Metode
+                        </button>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Metode</th>
+                                <th>Nomor/Akun</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentList">
+                            <tr>
+                                <td>Transfer Bank BCA</td>
+                                <td>1234567890</td>
+                                <td><span class="status-badge status-active">Aktif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>E-Wallet (GoPay)</td>
+                                <td>081234567890</td>
+                                <td><span class="status-badge status-active">Aktif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>COD</td>
+                                <td>-</td>
+                                <td><span class="status-badge status-inactive">Non-Aktif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Pengaturan Pengiriman</h2>
+                        <button class="btn-primary" onclick="showComingSoon()">
+                            <i class="fas fa-plus"></i> Tambah Kurir
+                        </button>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kurir</th>
+                                <th>Estimasi</th>
+                                <th>Biaya</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shippingList">
+                            <tr>
+                                <td>JNE Regular</td>
+                                <td>3-5 Hari</td>
+                                <td>Rp 15.000</td>
+                                <td><span class="status-badge status-active">Aktif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>JNE Express</td>
+                                <td>1-2 Hari</td>
+                                <td>Rp 25.000</td>
+                                <td><span class="status-badge status-active">Aktif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SiCepat</td>
+                                <td>2-4 Hari</td>
+                                <td>Rp 12.000</td>
+                                <td><span class="status-badge status-active">Aktif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-edit">Edit</button>
+                                        <button class="btn-delete">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon success" id="modalIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 id="modalTitle">Berhasil!</h3>
+            <p id="modalMessage">Data berhasil ditambahkan.</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Konfirmasi</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus item ini?</p>
+            <div class="modal-btns">
+                <button class="modal-btn modal-btn-secondary" onclick="closeConfirmModal()">Batal</button>
+                <button class="modal-btn modal-btn-primary" id="confirmBtn" onclick="confirmAction()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
