@@ -41,9 +41,9 @@ const Login = () => {
       // Account pending or other state where login is technically success but no data (cannot proceed)
       Swal.fire({
         icon: "warning",
-        title: "Information",
-        text: result.message,
-        confirmButtonText: "OK",
+        title: t("common.information"),
+        text: t("auth.accountPending"),
+        confirmButtonText: t("common.ok"),
         customClass: {
           popup: "swal-custom-popup",
           confirmButton: "swal-confirm-btn",

@@ -28,6 +28,7 @@ dist-ssr
 .github/
 reqres.txt
 reqresproduct.txt
+reqresApiCheckUser.txt
 responseApiProduct.json
 dist/
 login.txt

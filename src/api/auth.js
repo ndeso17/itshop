@@ -196,10 +196,42 @@ export const refreshToken = async () => {
   }
 };
 
+/**
+ * Check if credentials (username, email, phone) are available
+ * @param {Object} data - Key-value pair to check (e.g. {username: "foo"})
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export const checkCredentials = async (data) => {
+  try {
+    const response = await api.post("/api/auth/check-credentials", data);
+
+    // Handle cases where API returns 200 OK but body contains error status
+    if (response.data.statusCode && response.data.statusCode !== 200) {
+      return {
+        success: false,
+        message: response.data.message || "Validation failed",
+        data: response.data,
+      };
+    }
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Validation failed",
+      data: error.response?.data,
+    };
+  }
+};
+
 export default {
   login,
   verifyOTP,
   register,
   logout,
   refreshToken,
+  checkCredentials,
 };

@@ -44,7 +44,9 @@
         "prev": "Seb",
         "next": "Lan",
         "cancel": "Batal",
-        "saveChanges": "Simpan Perubahan"
+        "saveChanges": "Simpan Perubahan",
+        "information": "Informasi",
+        "ok": "OK"
     },
     "nav": {
         "home": "Beranda",
@@ -134,7 +136,19 @@
         "cancel": "Batal",
         "logoutConfirm": "Apakah Anda yakin ingin keluar?",
         "yes": "Ya",
-        "rememberMe": "Ingat saya di perangkat ini"
+        "rememberMe": "Ingat saya di perangkat ini",
+        "errors": {
+            "invalidEmail": "Format email tidak valid",
+            "invalidPhone": "Nomor telepon tidak valid (gunakan format 08xxx atau +62xxx)",
+            "passwordLength": "Kata sandi minimal 8 karakter",
+            "passwordComplex": "Kata sandi harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus",
+            "passwordMismatch": "Kata sandi tidak cocok",
+            "ageRequirement": "Anda harus berusia minimal 13 tahun",
+            "usernameTaken": "Username sudah terdaftar",
+            "emailTaken": "Email sudah terdaftar",
+            "phoneTaken": "Nomor telepon sudah terdaftar"
+        },
+        "accountPending": "Akun Anda berstatus pending. Silakan cek email untuk verifikasi akun atau hubungi administrator."
     },
     "product": {
         "addToCart": "Tambah ke Keranjang",

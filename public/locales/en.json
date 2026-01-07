@@ -44,7 +44,9 @@
         "prev": "Prev",
         "next": "Next",
         "cancel": "Cancel",
-        "saveChanges": "Save Changes"
+        "saveChanges": "Save Changes",
+        "information": "Information",
+        "ok": "OK"
     },
     "nav": {
         "home": "Home",
@@ -135,7 +137,19 @@
         "passwordMismatch": "Passwords do not match",
         "no": "No",
         "cancel": "Cancel",
-        "rememberMe": "Remember me on this device"
+        "rememberMe": "Remember me on this device",
+        "errors": {
+            "invalidEmail": "Invalid email format",
+            "invalidPhone": "Invalid phone number (use 08xxx or +62xxx format)",
+            "passwordLength": "Password must be at least 8 characters",
+            "passwordComplex": "Password must contain uppercase, lowercase, number, and special character",
+            "passwordMismatch": "Passwords do not match",
+            "ageRequirement": "You must be at least 13 years old",
+            "usernameTaken": "Username is already taken",
+            "emailTaken": "Email is already registered",
+            "phoneTaken": "Phone number is already registered"
+        },
+        "accountPending": "Your account is pending status. Please check email for verification or contact administrator."
     },
     "product": {
         "addToCart": "Add to Cart",

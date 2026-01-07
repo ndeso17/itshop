@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { checkCredentials } from "../api/auth"; // Import checkCredentials
 import { useTranslation } from "react-i18next";
 import {
   User,
@@ -26,45 +27,55 @@ const Register = () => {
     gender: "L",
     birth_date: "",
   });
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
 
   const { register } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = { ...errors }; // Preserve API errors
+
+    // Clear client-side errors before re-validating
+    delete newErrors.password;
+    delete newErrors.confirmPassword;
+    delete newErrors.birth_date;
+
+    // For username/email/phone, if they were marked as invalid by API, keep the error.
+    // If they were marked valid, we still re-check basic format just in case.
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+      newErrors.email = "auth.errors.invalidEmail";
     }
 
     // Phone validation (Indonesian format)
     const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
     if (!phoneRegex.test(formData.phone_number)) {
-      newErrors.phone_number =
-        "Invalid phone number (use 08xxx or +62xxx format)";
+      newErrors.phone_number = "auth.errors.invalidPhone";
     }
+
+    // Checking if we have valid API checks for these fields would be nice,
+    // but blocking submission if not checked might be too strict if API is down.
+    // Let's assume if there are no errors, it's fine.
 
     // Password validation
     if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
+      newErrors.password = "auth.errors.passwordLength";
     }
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
     if (!passwordRegex.test(formData.password)) {
-      newErrors.password =
-        "Password must contain uppercase, lowercase, number, and special character";
+      newErrors.password = "auth.errors.passwordComplex";
     }
 
     // Confirm password
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = "auth.errors.passwordMismatch";
     }
 
     // Birth date validation (must be 13+ years old)
@@ -73,12 +84,67 @@ const Register = () => {
       const today = new Date();
       const age = today.getFullYear() - birthDate.getFullYear();
       if (age < 13) {
-        newErrors.birth_date = "You must be at least 13 years old";
+        newErrors.birth_date = "auth.errors.ageRequirement";
       }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBlur = async (e) => {
+    const { name, value } = e.target;
+    if (!value) return;
+
+    // Only check specific fields
+    if (["username", "email", "phone_number"].includes(name)) {
+      // Basic format validation first to avoid unnecessary API calls
+      if (name === "email") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          setErrors((prev) => ({
+            ...prev,
+            email: "auth.errors.invalidEmail",
+          }));
+          return;
+        }
+      }
+
+      if (name === "phone_number") {
+        const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
+        if (!phoneRegex.test(value)) {
+          setErrors((prev) => ({
+            ...prev,
+            phone_number: "auth.errors.invalidPhone",
+          }));
+          return;
+        }
+      }
+
+      try {
+        const result = await checkCredentials({ [name]: value });
+        if (!result.success) {
+          let errorMessage = result.message;
+          if (name === "username") errorMessage = "auth.errors.usernameTaken";
+          if (name === "email") errorMessage = "auth.errors.emailTaken";
+          if (name === "phone_number") errorMessage = "auth.errors.phoneTaken";
+
+          setErrors((prev) => ({
+            ...prev,
+            [name]: errorMessage,
+          }));
+        } else {
+          // If success, clear error for this field if it was an API error
+          setErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors[name];
+            return newErrors;
+          });
+        }
+      } catch (error) {
+        console.error("Validation check failed", error);
+      }
+    }
   };
 
   const handleChange = (e) => {
@@ -87,12 +153,14 @@ const Register = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field
+    // Clear error for this field immediately on change
+    // because the status is now unknown until next blur
     if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
   };
 
@@ -153,13 +221,15 @@ const Register = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder={t("auth.placeholderUsername") || "johndoe"}
                 required
                 disabled={loading}
+                className={errors.username ? "is-invalid" : ""}
               />
             </div>
             {errors.username && (
-              <span className="error-text">{errors.username}</span>
+              <span className="error-text">{t(errors.username)}</span>
             )}
           </div>
 
@@ -190,12 +260,16 @@ const Register = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder={t("auth.placeholderEmail") || "name@example.com"}
                 required
                 disabled={loading}
+                className={errors.email ? "is-invalid" : ""}
               />
             </div>
-            {errors.email && <span className="error-text">{errors.email}</span>}
+            {errors.email && (
+              <span className="error-text">{t(errors.email)}</span>
+            )}
           </div>
 
           {/* Phone Number */}
@@ -208,13 +282,15 @@ const Register = () => {
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 placeholder={t("auth.placeholderPhone") || "081234567890"}
                 required
                 disabled={loading}
+                className={errors.phone_number ? "is-invalid" : ""}
               />
             </div>
             {errors.phone_number && (
-              <span className="error-text">{errors.phone_number}</span>
+              <span className="error-text">{t(errors.phone_number)}</span>
             )}
           </div>
 
@@ -268,7 +344,7 @@ const Register = () => {
               />
             </div>
             {errors.birth_date && (
-              <span className="error-text">{errors.birth_date}</span>
+              <span className="error-text">{t(errors.birth_date)}</span>
             )}
           </div>
 
@@ -295,7 +371,7 @@ const Register = () => {
               </button>
             </div>
             {errors.password && (
-              <span className="error-text">{errors.password}</span>
+              <span className="error-text">{t(errors.password)}</span>
             )}
             <div className="password-requirements mt-2">
               <small className="d-block mb-1 font-weight-bold text-muted">
@@ -399,7 +475,7 @@ const Register = () => {
               </button>
             </div>
             {errors.confirmPassword && (
-              <span className="error-text">{errors.confirmPassword}</span>
+              <span className="error-text">{t(errors.confirmPassword)}</span>
             )}
             {formData.confirmPassword && (
               <div
@@ -518,6 +594,20 @@ const Register = () => {
         .form-group input:focus {
             border-color: var(--dark);
             outline: none;
+        }
+        .form-group input.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5zM6 8.2a.3.3 0 000 .6.3.3 0 000-.6z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+        .form-group input.is-valid {
+            border-color: #28a745;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
         }
         .form-group input:disabled {
             background: #f5f5f5;
