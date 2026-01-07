@@ -1,0 +1,114 @@
+:root {
+  /* Main Colors */
+  --bg-primary: #f2d0c7;
+  --navbar-bg: #f7efea;
+  --surface-white: #ffffff;
+  --surface-warm: #efe6e2;
+  --cta-primary: #c48f7a;
+  --accent-muted: #8fa3a0;
+
+  /* Text Colors */
+  --text-primary: #2f2f2f;
+  --text-secondary: #6f6f6f;
+
+  /* Shadows */
+  --shadow-navbar: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  /* Border */
+  --border-light: 1px solid rgba(0, 0, 0, 0.05);
+
+  /* Bootstrap Overrides Variables */
+  --bs-primary: var(--cta-primary);
+  --bs-body-bg: var(--bg-primary);
+  --bs-body-color: var(--text-primary);
+}
+
+body {
+  font-family: "Inter", "Roboto", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  padding-bottom: 60px; /* Space for BottomNav on mobile */
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Utilities */
+.text-primary-custom {
+  color: var(--cta-primary) !important;
+}
+
+.bg-navbar {
+  background-color: var(--navbar-bg) !important;
+}
+
+.btn-primary {
+  background-color: var(--cta-primary) !important;
+  border-color: var(--cta-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: #b07e6b !important; /* slightly darker */
+  border-color: #b07e6b !important;
+}
+
+.btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
+.card {
+  border: none;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* SweetAlert2 Customization */
+.colored-toast.swal2-icon-success {
+  background-color: var(--cta-primary) !important;
+}
+/* HERO SLIDE */
+.hero-slide {
+  height: 70vh;        /* desktop & tablet */
+  min-height: 420px;  /* biar mobile punya ruang */
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  .hero-slide {
+    height: 80vh;        /* ⬅️ INI YANG BIKIN KELIHATAN BERUBAH */
+    min-height: 480px;
+  }
+
+  /* Naikkan caption */
+  .carousel-caption {
+    padding-top: 40px;
+    align-items: flex-start !important;
+  }
+}
+.product-card img {
+  transition: transform 0.35s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
+}
