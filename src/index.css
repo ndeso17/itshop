@@ -113,12 +113,117 @@ h6 {
   transform: scale(1.05);
 }
 
-/* Hide browser-native password reveal button */
-input::-ms-reveal,
-input::-ms-clear,
-input::-webkit-reveal,
-input::-webkit-clear-button {
-  display: none !important;
-  width: 0;
-  height: 0;
+/* Navbar Glassmorphism */
+.glass-navbar {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
+
+/* Search Bar Styling */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--surface-white);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 50px;
+  padding: 4px 6px 4px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.search-wrapper:focus-within {
+  border-color: var(--cta-primary);
+  box-shadow: 0 4px 12px rgba(196, 143, 122, 0.15);
+  transform: translateY(-1px);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  padding: 4px 0;
+}
+
+.search-button {
+  border: none;
+  background: var(--cta-primary);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.search-button:hover {
+  background: #b07e6b;
+  transform: scale(1.05);
+}
+
+/* Category Navigation */
+.category-bar {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.category-link {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  padding: 0.5rem 1.25rem !important;
+  position: relative;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.category-link:hover {
+  color: var(--cta-primary);
+  opacity: 1;
+}
+
+.category-link.active {
+  color: var(--cta-primary) !important;
+  opacity: 1;
+}
+
+.category-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 2px;
+  background: var(--cta-primary);
+  border-radius: 2px;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Icons & Buttons */
+.nav-action-btn {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-action-btn:hover {
+  color: var(--cta-primary) !important;
+  transform: translateY(-2px);
+}
+
+.badge {
+  padding: 0.35em 0.5em !important;
+  font-weight: 600 !important;
+}
+
